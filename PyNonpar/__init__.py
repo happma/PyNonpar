@@ -1,7 +1,7 @@
 """A pypi demonstration vehicle.
 
-.. moduleauthor:: Andrew Carter <andrew@invalid.com>
+.. moduleauthor:: Martin Happ <martin.happ@aon.at>
 
 """
 
-import pseudorank
+__all__ = ['pseudorank']
