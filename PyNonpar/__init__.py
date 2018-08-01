@@ -4,4 +4,4 @@
 
 """
 
-__all__ = ['pseudorank']
+__all__ = ['pseudorank', 'hettmansperger']

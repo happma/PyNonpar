@@ -12,6 +12,7 @@ Welcome to PyNonpar's documentation!
 
    readme
    pseudorank
+   hettmansperger
 
 
 Indices and tables
