@@ -35,16 +35,15 @@
 <span id="pseudo-rank-calculation-using-recpr"></span><h1>Pseudo-Rank Calculation Using RECPR<a class="headerlink" href="#module-pseudorank" title="Permalink to this headline">¶</a></h1>
 <span class="target" id="module-pseudorank"></span><dl class="function">
 <dt id="pseudorank.psrank">
-<code class="descclassname">pseudorank.</code><code class="descname">psrank</code><span class="sig-paren">(</span><em>data</em>, <em>group</em>, <em>ties_method='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pseudorank.html#psrank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pseudorank.psrank" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pseudorank.</code><code class="descname">psrank</code><span class="sig-paren">(</span><em>data</em>, <em>group</em>, <em>ties_method</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pseudorank.html#psrank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pseudorank.psrank" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to calculate pseudo-ranks.</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>data (list(float)): values to be ranked
-group (list(int)): group factor</dd>
-<dt>Kwargs:</dt>
-<dd>ties_method (str): either ‘average’, ‘min’ or ‘max’</dd>
+group (list(int)): group factor
+ties_method (str): currently only average supported</dd>
 <dt>Returns:</dt>
-<dd>list(float) of pseudo-ranks.</dd>
+<dd>pd.Series of pseudo-ranks.</dd>
 </dl>
 </dd></dl>
 
