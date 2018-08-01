@@ -15,7 +15,10 @@ setup(
     description='Functions and test statistics for nonparametric statistics',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    #package_dir={'': 'lib'},
+    install_requires=[
+        'numpy',
+        'pandas',
+    ],
     classifiers=(
         "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
