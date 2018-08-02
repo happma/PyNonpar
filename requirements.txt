@@ -2,3 +2,5 @@ pandas
 numpy
 pytest
 pytest-rerunfailures
+pytest-cov
+codecov

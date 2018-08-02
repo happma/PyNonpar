@@ -131,8 +131,16 @@ def psrank(data, group, ties_method = "average"):
         ties_method (str): either 'average', 'max' or 'min' for mid, max or min pseudo-ranks
 
     Returns:
-        pd.Series of pseudo-ranks.
+        list(float) of pseudo-ranks.
     """
+
+    # Check inputs
+    if type(data) != list:
+        raise TypeError("data must be a list")
+    if type(group) != list:
+        raise TypeError("group must be a list")
+    if type(ties_method) != str or ties_method not in ['average', 'min', 'max']:
+        raise TypeError('ties_method must be either average, min or max')
 
     d = {'data': data, 'grp': group}
     df = pd.DataFrame(data=d)
@@ -163,4 +171,4 @@ def psrank(data, group, ties_method = "average"):
     # sort back
     dff.index = orig_sort
     dff.sort_index(inplace=True)
-    return dff['psrank']
+    return dff['psrank'].tolist()
