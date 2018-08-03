@@ -17,7 +17,7 @@ from scipy.stats import norm
 import collections
 from collections import namedtuple
 
-def hettmansperger_norton_test(data, group, alternative, trend):
+def hettmansperger_norton_test(data, group, alternative = "increasing", trend = None):
     """
     Function to calculate the Hettmansperger-Norton test.
 
@@ -28,8 +28,10 @@ def hettmansperger_norton_test(data, group, alternative, trend):
         trend (list(float)): a vector specifying the alternative; only used, if alternative = 'custom'
 
     Returns:
-        float test statistic
-        float one sided p-value
+        str: chosen alternative
+        list(int): trend
+        float: test statistic
+        float: one sided p-value
     """
 
     d = {'data': ps.psrank(data, group, ties_method = "average"), 'grp': group}
@@ -39,7 +41,7 @@ def hettmansperger_norton_test(data, group, alternative, trend):
     df = df.sort_values(['grp'])
     # dff.assign(grp = dff['grp'][dff.index].values)
     # orig_sort = df.index
-    # df = df.reset_index(drop=True)
+    df = df.reset_index(drop=True)
     df['codes'] = df['grp'].cat.codes
 
     # calculate group sizes, number of groups and unweighted relative effects
@@ -82,13 +84,13 @@ def hettmansperger_norton_test(data, group, alternative, trend):
     test_hettmansperger = math.sqrt(N)*np.dot(sigma_part.transpose(), p_hat)*1/math.sqrt(sigma_hat_squared)
     p_value = 1 - scipy.stats.norm.cdf(test_hettmansperger)
 
-    print("Hettmansperger-Norton test")
-    print("Alternative:", alternative)
-    print("Weight:", w)
-    print("Test Statistic:", test_hettmansperger)
-    print("p-value (one-sided):", p_value)
+    #print("Hettmansperger-Norton test")
+    #print("Alternative:", alternative)
+    #print("Weight:", w)
+    #print("Test Statistic:", test_hettmansperger)
+    #print("p-value (one-sided):", p_value)
 
-    result = namedtuple('HettmanspergerNortonResult', ('statistic', 'pvalue'))
-    output = result(test_hettmansperger, p_value)
+    result = namedtuple('HettmanspergerNortonResult', ('alternative', 'weight', 'statistic', 'pvalue'))
+    output = result(alternative, w, test_hettmansperger, p_value)
 
     return output
