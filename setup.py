@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 with open("README.md", "r") as fh:
@@ -22,6 +22,7 @@ setup(
         'scipy',
         'pytest-cov',
         'codecov',
+        'numba',
     ],
     classifiers=(
         "Development Status :: 1 - Pre-Alpha",

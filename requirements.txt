@@ -1,6 +1,7 @@
 pandas
 numpy
 scipy
+numba
 pytest
 pytest-rerunfailures
 pytest-cov
