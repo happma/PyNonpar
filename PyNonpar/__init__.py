@@ -1,4 +1,4 @@
-"""A pypi demonstration vehicle.
+""" PyNonpar: Nonparametric Statistics in Python.
 
 .. moduleauthor:: Martin Happ <martin.happ@aon.at>
 
