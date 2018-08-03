@@ -3,7 +3,7 @@
 
 .. module:: hettmansperger
    :platform: Unix, Windows
-   :synopsis: Module to calculate the Hettmansperger-Norton test for patterned alternatives in k-sample problems.
+   :synopsis: Module to calculate the Hettmansperger-Norton test for patterned alternatives in k-sample problems using pseudo-ranks.
 
 .. moduleauthor:: Martin Happ <martin.happ@aon.at>
 """
@@ -14,6 +14,8 @@ import PyNonpar.pseudorank as ps
 import math
 import scipy
 from scipy.stats import norm
+import collections
+from collections import namedtuple
 
 def hettmansperger_norton_test(data, group, alternative, trend):
     """
@@ -27,6 +29,7 @@ def hettmansperger_norton_test(data, group, alternative, trend):
 
     Returns:
         float test statistic
+        float one sided p-value
     """
 
     d = {'data': ps.psrank(data, group, ties_method = "average"), 'grp': group}
@@ -39,7 +42,7 @@ def hettmansperger_norton_test(data, group, alternative, trend):
     # df = df.reset_index(drop=True)
     df['codes'] = df['grp'].cat.codes
 
-    # calculate group sizes and number of groups
+    # calculate group sizes, number of groups and unweighted relative effects
     N = len(df['data'])
     a = len(np.unique(df['codes']))
     n = [0 for x in range(a)]
@@ -58,7 +61,7 @@ def hettmansperger_norton_test(data, group, alternative, trend):
     elif alternative == "custom":
         w = trend
 
-    # defining matrices and vectors for computing test statistic
+    # defining matrices and vectors for the computing test statistic
     v1 = [1 for x in range(a)]
     mS = np.diag(n)
     mI = np.diag(v1)
@@ -79,10 +82,13 @@ def hettmansperger_norton_test(data, group, alternative, trend):
     test_hettmansperger = math.sqrt(N)*np.dot(sigma_part.transpose(), p_hat)*1/math.sqrt(sigma_hat_squared)
     p_value = 1 - scipy.stats.norm.cdf(test_hettmansperger)
 
-    print("Hettmansperger-Norten test")
+    print("Hettmansperger-Norton test")
     print("Alternative:", alternative)
     print("Weight:", w)
-    print("test statistic", test_hettmansperger)
-    print("p-value (one-sided)", p_value)
+    print("Test Statistic:", test_hettmansperger)
+    print("p-value (one-sided):", p_value)
 
-    return None
+    result = namedtuple('HettmanspergerNortonResult', ('statistic', 'pvalue'))
+    output = result(test_hettmansperger, p_value)
+
+    return output
