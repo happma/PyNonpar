@@ -39,8 +39,8 @@ PyNonpar.pseudorank.psrank(x, group, ties_method = "average")
 
 ### Two-Sample Tests
 
-1. Asymptotic Wilcoxon-Mann-Whitney test: brunner_munzel_test()
-2. Brunner-Munzel test (Generalized Wilcoxon test): brunnzer
+1. Asymptotic Wilcoxon-Mann-Whitney test: wilcoxon_mann_whitney_test()
+2. Brunner-Munzel test (Generalized Wilcoxon test): brunner_munzel_test()
 
 The Hodges-Lehmann estimator can be calculated in a location shift model: hodges_lehmann(). The confidence interval for this estimator is
 only asymptotic and assumes continuous distributions. 
