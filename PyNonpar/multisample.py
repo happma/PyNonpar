@@ -145,7 +145,3 @@ def hettmansperger_norton_test(data, group, alternative = "increasing", trend = 
     output = result(alternative, w, test_hettmansperger, p_value)
 
     return output
-
-x = [2.9 ,  3 ,  2.5 ,  2.6 ,  3.2 ,  3.8 ,  2.7 ,  4 ,  2.4 ,  2.8 ,  3.4 ,  3.7 ,  2.2 ,  2 ]
-g = [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3]
-print(kruskal_wallis_test(x,g,False))
