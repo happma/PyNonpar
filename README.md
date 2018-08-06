@@ -14,6 +14,10 @@ To install the package from PyPi, simply type
 pip install PyNonpar
 ```
 
+## Table of Contents
+**[Two-Sample Tests](#two-sample-tests)**<br>
+**[Multi-Sample Tests](#multi-sample-tests)**<br>
+
 ## Pseudo-Ranks
 If there are ties (i.e., observations with the same value) in the data, then the pseudo-ranks have to be adjusted. There
 are the options 'minimum', 'maximum' and 'average'. It is recommended to use 'average' as for this adjusmtent, normalized
@@ -33,7 +37,20 @@ PyNonpar.pseudorank.psrank(x, group, ties_method = "average")
 
 ## Nonparametric Test Statistics
 
-### The Hettmansperger-Norton Test for Patterned Alternatives
+### Two-Sample Tests
+
+1. Asymptotic Wilcoxon-Mann-Whitney test: brunner_munzel_test()
+2. Brunner-Munzel test (Generalized Wilcoxon test): brunnzer
+
+The Hodges-Lehmann estimator can be calculated in a location shift model: hodges_lehmann(). The confidence interval for this estimator is
+only asymptotic and assumes continuous distributions. 
+
+### Multi-Sample Tests
+
+1. The Hettmansperger-Norton Test for Patterned Alternatives: hettmansperger_norton_test()
+2. Kruskal-Wallis test: kruskal_wallis_test()
+
+####  1. The Hettmansperger-Norton Test for Patterned Alternatives
 This package provides a function to calculate the Hettmansperger-Norton test for patterned alternatives
 using pseudo-ranks. Originally, this test was developed for ranks but this version was adapted to pseudo-ranks.
 
