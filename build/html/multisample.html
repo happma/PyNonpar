@@ -1,0 +1,142 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Nonparametric Tests for Multi-Sample Problems &#8212; PyNonpar 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Nonparametric Tests for Two-Sample Problems" href="twosample.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-multisample">
+<span id="nonparametric-tests-for-multi-sample-problems"></span><h1>Nonparametric Tests for Multi-Sample Problems<a class="headerlink" href="#module-multisample" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-multisample"></span><dl class="function">
+<dt id="multisample.hettmansperger_norton_test">
+<code class="descclassname">multisample.</code><code class="descname">hettmansperger_norton_test</code><span class="sig-paren">(</span><em>data</em>, <em>group</em>, <em>alternative='increasing'</em>, <em>trend=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/multisample.html#hettmansperger_norton_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#multisample.hettmansperger_norton_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to calculate the Hettmansperger-Norton test.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">data (list(float)): data from all groups</p>
+<p>group (list(int)): group factor</p>
+<p>alternative (str): either ‘increasing’, ‘decreasing’ or ‘custom’</p>
+<p class="last">trend (list(float)): a vector specifying the alternative; only used, if alternative = ‘custom’</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">str: chosen alternative</p>
+<p>list(int): trend</p>
+<p>float: test statistic</p>
+<p class="last">float: one sided p-value</p>
+</dd>
+<dt>References:</dt>
+<dd>Hettmansperger, T. P., &amp; Norton, R. M. (1987). Tests for patterned alternatives in k-sample problems. Journal of the American Statistical Association, 82(397), 292-299.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="multisample.kruskal_wallis_test">
+<code class="descclassname">multisample.</code><code class="descname">kruskal_wallis_test</code><span class="sig-paren">(</span><em>data</em>, <em>group</em>, <em>pseudoranks=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/multisample.html#kruskal_wallis_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#multisample.kruskal_wallis_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to calculate the Kruskal-Wallis test. It is recommended to use pseudo-ranks as ranks may lead to paradoxical results.</p>
+<p>Null hypothesis H_0: F_1 = … F_a</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">data (list(float)): data from all groups</p>
+<p>group (list(int)): group factor</p>
+<p class="last">pseudoranks (bool): True if pseudo-ranks instead of ranks are used</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">float: test statistic</p>
+<p class="last">float:  p-value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyNonpar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pseudorank.html">Pseudo-Rank Calculation Using RECPR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="twosample.html">Nonparametric Tests for Two-Sample Problems</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Nonparametric Tests for Multi-Sample Problems</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="twosample.html" title="previous chapter">Nonparametric Tests for Two-Sample Problems</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Martin Happ.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/multisample.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

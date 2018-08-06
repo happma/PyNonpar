@@ -134,9 +134,9 @@ def psrank(data, group, ties_method = "average"):
     Function to calculate pseudo-ranks.
 
     Args:
-        data (list(float)): values to be ranked \n
-        group (list(int)): group factor \n
-        ties_method (str): either 'average', 'max' or 'min' for mid, max or min pseudo-ranks \n
+        data (list(float)): values to be ranked
+        group (list(int)): group factor
+        ties_method (str): either 'average', 'max' or 'min' for mid, max or min pseudo-ranks
 
     Returns:
         list(float) of pseudo-ranks.

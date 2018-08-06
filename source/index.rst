@@ -12,7 +12,8 @@ Welcome to PyNonpar's documentation!
 
    readme
    pseudorank
-   hettmansperger
+   twosample
+   multisample
 
 
 Indices and tables

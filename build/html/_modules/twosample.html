@@ -1,0 +1,299 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>twosample &#8212; PyNonpar 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twosample</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. py:currentmodule:: twosample</span>
+
+<span class="sd">.. module:: twosample</span>
+<span class="sd">   :platform: Unix, Windows</span>
+<span class="sd">   :synopsis: Module to calculate two sample tests: Brunner-Munzel, Wilcoxon-Mann-Whitney</span>
+
+<span class="sd">.. moduleauthor:: Martin Happ &lt;martin.happ@aon.at&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">PyNonpar.pseudorank</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">PyNonpar</span>
+
+
+<div class="viewcode-block" id="brunner_munzel_test"><a class="viewcode-back" href="../twosample.html#twosample.brunner_munzel_test">[docs]</a><span class="k">def</span> <span class="nf">brunner_munzel_test</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;two.sided&quot;</span><span class="p">,</span> <span class="n">quantile</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to calculate the Brunner-Munzel test. It is recommended to use the t-approximation for small samples.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list(float)): data from first group \n</span>
+<span class="sd">        y (list(float)): data from second group \n</span>
+<span class="sd">        alternative (str): either &#39;two.sided&#39;, &#39;less&#39; or &#39;greater&#39; \n</span>
+<span class="sd">        quantile (str): either &#39;t&#39; for the small sample approximation with a t-distribution or &#39;normal&#39; for the large sample procedure. \n</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: chosen alternative \n</span>
+<span class="sd">        list(int): trend \n</span>
+<span class="sd">        float: test statistic \n</span>
+<span class="sd">        float: estimated degrees of freedom for the t-approximation (only when quantile = &#39;t&#39;) \n</span>
+<span class="sd">        float:  p-value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check inputs</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;x must be a list&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;y must be a list&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">alternative</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span> <span class="ow">or</span> <span class="n">alternative</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;two.sided&#39;</span><span class="p">,</span> <span class="s1">&#39;less&#39;</span><span class="p">,</span> <span class="s1">&#39;greater&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;alternative must be either two.sided, less or greater&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">quantile</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span> <span class="ow">or</span> <span class="n">quantile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;quantile must be either t or normal&#39;</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+    <span class="n">grp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))]</span>
+    <span class="n">ranks</span> <span class="o">=</span> <span class="n">PyNonpar</span><span class="o">.</span><span class="n">pseudorank</span><span class="o">.</span><span class="n">psrank</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">grp</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">N</span><span class="p">]</span>
+
+    <span class="n">xi</span> <span class="o">=</span> <span class="n">PyNonpar</span><span class="o">.</span><span class="n">pseudorank</span><span class="o">.</span><span class="n">psrank</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">grp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">yi</span> <span class="o">=</span> <span class="n">PyNonpar</span><span class="o">.</span><span class="n">pseudorank</span><span class="o">.</span><span class="n">psrank</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">grp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">R2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">R1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># calculate variance estimator</span>
+    <span class="n">S1_squared</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">S1_squared</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">R1</span> <span class="o">+</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">S1_squared</span> <span class="o">=</span> <span class="n">S1_squared</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">S2_squared</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">S2_squared</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">yi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">R2</span> <span class="o">+</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">S2_squared</span> <span class="o">=</span> <span class="n">S2_squared</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">sigma_BF_squared</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">S1_squared</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">N</span> <span class="o">*</span> <span class="n">S2_squared</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># calculate test statistic</span>
+    <span class="n">W_N_BF</span> <span class="o">=</span> <span class="p">(</span><span class="n">R2</span> <span class="o">-</span> <span class="n">R1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma_BF_squared</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="n">p_value</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">if</span> <span class="n">quantile</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;greater&quot;</span><span class="p">:</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;less&quot;</span><span class="p">:</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;two.sided&quot;</span><span class="p">:</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">))</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;BrunnerMunzelResult&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;alternative&#39;</span><span class="p">,</span> <span class="s1">&#39;statistic&#39;</span><span class="p">,</span> <span class="s1">&#39;pvalue&#39;</span><span class="p">))</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">(</span><span class="n">alternative</span><span class="p">,</span> <span class="n">W_N_BF</span><span class="p">,</span> <span class="n">p_value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f_hat</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">sigma_BF_squared</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">S1_squared</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">S2_squared</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;greater&quot;</span><span class="p">:</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">,</span> <span class="n">f_hat</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;less&quot;</span><span class="p">:</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">,</span> <span class="n">f_hat</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;two.sided&quot;</span><span class="p">:</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">,</span> <span class="n">f_hat</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N_BF</span><span class="p">,</span> <span class="n">f_hat</span><span class="p">))</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;BrunnerMunzelResult&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;alternative&#39;</span><span class="p">,</span> <span class="s1">&#39;statistic&#39;</span><span class="p">,</span> <span class="s1">&#39;df&#39;</span><span class="p">,</span> <span class="s1">&#39;pvalue&#39;</span><span class="p">))</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">(</span><span class="n">alternative</span><span class="p">,</span> <span class="n">W_N_BF</span><span class="p">,</span> <span class="n">f_hat</span><span class="p">,</span> <span class="n">p_value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="hodges_lehmann"><a class="viewcode-back" href="../twosample.html#twosample.hodges_lehmann">[docs]</a><span class="k">def</span> <span class="nf">hodges_lehmann</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to calculate the Hodges-Lehmann estimator.\n</span>
+<span class="sd">    Let us assume a location shift effect, i.e., F_1(x) = F(x - mu_1), i = 1,2 and theta = mu_2 - mu_1. \n</span>
+<span class="sd">    The Hodges-Lehmann estimator theta_hat is an asymptotically unbiased estimator for theta. \n</span>
+<span class="sd">    Note that the calculated confidence interval is only valid if there are no ties in the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list(float)): data from first group \n</span>
+<span class="sd">        y (list(float)): data from second group \n</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Hodges-Lehmann estimator theta_hat \n</span>
+<span class="sd">        float: lower bound for the asymptotic 1-alpha/2 confidence interval for theta \n</span>
+<span class="sd">        float: upper bound for the 1-alpha/2 confidence interval for theta \n</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">m</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">diff</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+    <span class="n">hl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+
+    <span class="c1"># asymptotic 1-alpha/2 confidence interval</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">n</span><span class="o">*</span><span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">alpha</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">alpha</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">12</span><span class="p">)</span>
+
+    <span class="n">diff</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">lower</span> <span class="o">=</span> <span class="n">diff</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">upper</span> <span class="o">=</span> <span class="n">diff</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">U</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;HodgesLehmannEstimator&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;estimate&#39;</span><span class="p">,</span> <span class="s1">&#39;lowerCI&#39;</span><span class="p">,</span> <span class="s1">&#39;upperCI&#39;</span><span class="p">))</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">(</span><span class="n">hl</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="wilcoxon_mann_whitney_test"><a class="viewcode-back" href="../twosample.html#twosample.wilcoxon_mann_whitney_test">[docs]</a><span class="k">def</span> <span class="nf">wilcoxon_mann_whitney_test</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">alternative</span> <span class="o">=</span> <span class="s2">&quot;two.sided&quot;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to calculate the Wilcoxon-Mann-Whitney test. Exact test not yet implemented.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list(float)): data from first group \n</span>
+<span class="sd">        y (list(float)): data from second group \n</span>
+<span class="sd">        alternative (str): either &#39;two.sided&#39;, &#39;less&#39; or &#39;greater&#39; \n</span>
+<span class="sd">        alpha (float): 1-alpha/2 confidence interval (only valid if there are no ties)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: chosen alternative \n</span>
+<span class="sd">        list(int): trend \n</span>
+<span class="sd">        float: test statistic \n</span>
+<span class="sd">        float: hodges lehmann estimate for a location shift effect \n</span>
+<span class="sd">        float: lower bound for 1-alpha/2 CI for location shift effect \n</span>
+<span class="sd">        float: upper bound for 1-alpha/2 CI for location shift effect \n</span>
+<span class="sd">        float:  p-value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">hl</span> <span class="o">=</span> <span class="n">hodges_lehmann</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="n">ranks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+    <span class="n">ranks</span> <span class="o">=</span> <span class="n">PyNonpar</span><span class="o">.</span><span class="n">pseudorank</span><span class="o">.</span><span class="n">psrank</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ranks</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span>
+
+    <span class="n">R1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">R2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># variance estimator</span>
+    <span class="n">sigma_R_squared</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">sigma_R_squared</span> <span class="o">+=</span> <span class="p">(</span><span class="n">ranks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">sigma_R_squared</span> <span class="o">=</span> <span class="n">sigma_R_squared</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">W_N</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">R2</span> <span class="o">-</span> <span class="n">R1</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma_R_squared</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;greater&quot;</span><span class="p">:</span>
+        <span class="n">p_value</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;less&quot;</span><span class="p">:</span>
+        <span class="n">p_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">alternative</span> <span class="o">==</span> <span class="s2">&quot;two.sided&quot;</span><span class="p">:</span>
+        <span class="n">p_value</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">W_N</span><span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;WilcoxonMannWhitneyResult&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;alternative&#39;</span><span class="p">,</span> <span class="s1">&#39;statistic&#39;</span><span class="p">,</span> <span class="s1">&#39;HodgesLehmann&#39;</span><span class="p">,</span> <span class="s1">&#39;lowerCI&#39;</span><span class="p">,</span> <span class="s1">&#39;upperCI&#39;</span><span class="p">,</span> <span class="s1">&#39;pvalue&#39;</span><span class="p">))</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">(</span><span class="n">alternative</span><span class="p">,</span> <span class="n">W_N</span><span class="p">,</span> <span class="n">hl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">hl</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">p_value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyNonpar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pseudorank.html">Pseudo-Rank Calculation Using RECPR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../twosample.html">Nonparametric Tests for Two-Sample Problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multisample.html">Nonparametric Tests for Multi-Sample Problems</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Martin Happ.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
