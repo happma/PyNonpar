@@ -45,6 +45,33 @@ PyNonpar.pseudorank.psrank(x, group, ties_method = "average")
 The Hodges-Lehmann estimator can be calculated in a location shift model: hodges_lehmann(). The confidence interval for this estimator is
 only asymptotic and assumes continuous distributions. 
 
+#### 1. Asymptotic Wilcoxon-Mann-Whitney test
+
+```Python
+import PyNonpar
+from PyNonpar import*
+
+x = [8,4,10,4,9,1,3,3,4,8]
+y = [10,5,11,6,11,2,4,5,5,10]
+
+PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", alpha = 0.05)
+```
+
+#### 2. Brunner-Munzel test
+
+```Python
+import PyNonpar
+from PyNonpar import*
+
+x = [8,4,10,4,9,1,3,3,4,8]
+y = [10,5,11,6,11,2,4,5,5,10]
+
+PyNonpar.twosample.brunner_munzel_test(x, y, alternative="less", quantile = "t")
+PyNonpar.twosample.brunner_munzel_test(x, y, alternative="less", quantile = "normal")
+
+```
+
+
 ### Multi-Sample Tests
 
 1. The Hettmansperger-Norton Test for Patterned Alternatives: hettmansperger_norton_test()
@@ -67,6 +94,22 @@ x = [1, 1, 1, 1, 2, 3, 4, 5, 6]
 group = ['C', 'C', 'B', 'B', 'B', 'A', 'C', 'A', 'C']
 
 PyNonpar.hettmansperger.hettmansperger_norton_test(x, group, alternative = "custom", trend = [1,3,2])
+```
+
+#### 2. Kruskal-Wallis Test
+```Python
+import PyNonpar
+from PyNonpar import*
+
+# some artificial data
+x = [1, 1, 1, 1, 2, 3, 4, 5, 6]
+group = ['C', 'C', 'B', 'B', 'B', 'A', 'C', 'A', 'C']
+
+# Using pseudo-ranks
+PyNonpar.multisample.kruskal_wallis_test(x, group, pseudoranks = True)
+
+# Using ranks
+PyNonpar.multisample.kruskal_wallis_test(x, group, pseudoranks = False)
 ```
 
 ## References

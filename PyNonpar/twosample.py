@@ -170,7 +170,7 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
     data = x + y
     N = len(data)
 
-    hl = hodges_lehmann(x, y)
+    hl = hodges_lehmann(x, y, alpha)
 
     ranks = [0 for i in range(N)]
     ranks = PyNonpar.pseudorank.psrank(data, ranks)
