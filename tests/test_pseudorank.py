@@ -22,19 +22,29 @@ y4 = [sum(x)*1/2 for x in zip(PyNonpar.pseudorank.psrank(x4, grp, ties_method="m
 y5= [sum(x)*1/2 for x in zip(PyNonpar.pseudorank.psrank(x5, grp, ties_method="min") , PyNonpar.pseudorank.psrank(x5, grp, ties_method="max") )]
 
 def test_psrank():
-    assert PyNonpar.pseudorank.psrank(x, grp, ties_method = "average") == r
-    assert PyNonpar.pseudorank.psrank(x, grp, ties_method = "max") == rM
-    assert PyNonpar.pseudorank.psrank(x, grp, ties_method = "min") == rm
+    if PyNonpar.pseudorank.psrank(x, grp, ties_method = "average") != r:
+        raise AssertionError()
+    if PyNonpar.pseudorank.psrank(x, grp, ties_method = "max") != rM:
+        raise AssertionError()
+    if PyNonpar.pseudorank.psrank(x, grp, ties_method = "min") != rm:
+        raise AssertionError()
+    if PyNonpar.pseudorank.psrank(x2, grp, ties_method = "average") != r2:
+        raise AssertionError()
+    if y2 != r2:
+        raise AssertionError()
 
-    assert PyNonpar.pseudorank.psrank(x2, grp, ties_method = "average") == r2
-    assert y2 == r2
+    if PyNonpar.pseudorank.psrank(x3, grp, ties_method="average") != r3:
+        raise AssertionError()
+    if y3 != r3:
+        raise AssertionError()
 
-    assert PyNonpar.pseudorank.psrank(x3, grp, ties_method="average") == r3
-    assert y3 == r3
+    if PyNonpar.pseudorank.psrank(x4, grp, ties_method="average") != r4:
+        raise AssertionError()
+    if y4 != r4:
+        raise AssertionError()
 
-    assert PyNonpar.pseudorank.psrank(x4, grp, ties_method="average") == r4
-    assert y4 == r4
-
-    assert PyNonpar.pseudorank.psrank(x5, grp, ties_method="average") == r5
-    assert y5 == r5
+    if PyNonpar.pseudorank.psrank(x5, grp, ties_method="average") != r5:
+        raise AssertionError()
+    if y5 != r5:
+        raise AssertionError()
 
