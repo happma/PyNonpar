@@ -8,13 +8,10 @@
 .. moduleauthor:: Martin Happ <martin.happ@aon.at>
 """
 
-import pandas as pd
 import numpy as np
-import PyNonpar.pseudorank as ps
 import math
 import scipy
-from scipy.stats import norm
-import collections
+import scipy.stats
 from collections import namedtuple
 import PyNonpar
 
@@ -38,13 +35,13 @@ def brunner_munzel_test(x: list, y: list, alternative="two.sided", quantile="t")
     """
 
     # Check inputs
-    if type(x) != list:
+    if not isinstance(x, list):
         raise TypeError("x must be a list")
-    if type(y) != list:
+    if not isinstance(y, list):
         raise TypeError("y must be a list")
-    if type(alternative) != str or alternative not in ['two.sided', 'less', 'greater']:
+    if (not isinstance(alternative, str)) or (alternative not in ['two.sided', 'less', 'greater']):
         raise TypeError('alternative must be either two.sided, less or greater')
-    if type(quantile) != str or quantile not in ['t', 'normal']:
+    if (not isinstance(quantile, str)) or (quantile not in ['t', 'normal']):
         raise TypeError('quantile must be either t or normal')
 
     n = (len(x), len(y))

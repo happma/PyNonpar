@@ -13,6 +13,7 @@ import numpy as np
 import PyNonpar.pseudorank as ps
 import math
 import scipy
+import scipy.stats
 from collections import namedtuple
 import PyNonpar
 
