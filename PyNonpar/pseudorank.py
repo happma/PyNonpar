@@ -13,7 +13,6 @@
 import pandas as pd
 import numpy as np
 import numba as nu
-from numba import jit
 
 
 @nu.jit(nopython=True)
@@ -143,12 +142,12 @@ def psrank(data, group, ties_method = "average"):
     """
 
     # Check inputs
-    if type(data) != list:
+    if not isinstance(data, list):
         raise TypeError("data must be a list")
-    if type(group) != list:
+    if not isinstance(group, list):
         raise TypeError("group must be a list")
-    if type(ties_method) != str or ties_method not in ['average', 'min', 'max']:
-        raise TypeError('ties_method must be either average, min or max')
+    if (not isinstance(ties_method, str)) or (ties_method not in ['average', 'min', 'max']):
+        raise TypeError("ties_method must be either 'average', 'min' or 'max'")
 
     d = {'data': data, 'grp': group}
     df = pd.DataFrame(data=d)

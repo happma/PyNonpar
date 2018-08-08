@@ -13,9 +13,6 @@ import numpy as np
 import PyNonpar.pseudorank as ps
 import math
 import scipy
-from scipy.stats import norm
-from scipy.stats import chi2
-import collections
 from collections import namedtuple
 import PyNonpar
 
