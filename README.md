@@ -9,7 +9,7 @@ Test statistics based on ranks may lead to paradoxical results. A solution are s
 This package provides a function to calculate pseudo-ranks which are used in nonparametric statistics for rank tests.
 For a definition and discussion of pseudo-ranks, see for example [1].
 
-To install the package from PyPi, simply type
+To install the package from PyPI, simply type
 ```Python
 pip install PyNonpar
 ```
