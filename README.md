@@ -10,7 +10,7 @@ This package provides a function to calculate pseudo-ranks which are used in non
 For a definition and discussion of pseudo-ranks, see for example [1].
 
 To install the package from PyPI, simply type
-```Python
+```
 pip install PyNonpar
 ```
 
@@ -76,6 +76,12 @@ PyNonpar.twosample.brunner_munzel_test(x, y, alternative="less", quantile = "nor
 
 #### 1. Paired ranks test
 
+The paired ranks test compares the marginal distributions F1 and F2. The Null hypothesis is H0: F1 = F2 (var_equal = True)
+or H0: p = 1/2 (var_equal = False). The two sided alternative is for both cases p != 1/2.
+
+p = Probability(X_i < Y_j) + 1/2 * Probability(X_i = Y_j) for i != j where (X_i, Y_i), (X_j, Y_j) are paired observations.
+
+For more details, see [1].
 ```Python
 import PyNonpar
 from PyNonpar import*
@@ -83,7 +89,7 @@ from PyNonpar import*
 x = [1, 2, 3, 4, 5, 7, 1, 1, 1]
 y = [4, 6, 8, 7, 6, 5, 9, 1, 1]
 
-PyNonpar.twosample_paired.paired_ranks_test(x, y, alternative="two.sided", quantile="normal")
+PyNonpar.twosample_paired.paired_ranks_test(x, y, alternative="two.sided", var_equal=False, quantile="normal")
 
 ```
 

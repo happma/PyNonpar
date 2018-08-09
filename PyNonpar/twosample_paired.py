@@ -19,7 +19,7 @@ def paired_ranks_test(x, y, alternative = "two.sided", var_equal = False, quanti
     """
     Function to calculate the Paired Ranks test. This test compares the marignal distributions with each other.\n
     For var_equal = true, the null hypothesis H_0: F_1 = F_2 is assumed. For var_equal = False, the null hypothesis\n
-    is H_0: p = 1/2 where p = Probablity(x_i < y_j) + Probablity(x_i = y_j), i != j.
+    is H_0: p = 1/2 where p = Probablity(x_i < y_j) + 1/2 * Probablity(x_i = y_j), i != j.
 
     Args:
         x (list(float)): data from first group \n
