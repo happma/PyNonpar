@@ -4,4 +4,4 @@
 
 """
 
-__all__ = ['pseudorank', 'multisample', 'twosample']
+__all__ = ['pseudorank', 'multisample', 'twosample', 'twosample_paired']

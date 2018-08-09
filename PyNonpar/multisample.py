@@ -15,7 +15,7 @@ import math
 import scipy
 import scipy.stats
 from collections import namedtuple
-import PyNonpar
+import PyNonpar.pseudorank
 
 def kruskal_wallis_test(data, group, pseudoranks = True):
     """

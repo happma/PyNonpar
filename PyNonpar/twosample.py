@@ -13,7 +13,7 @@ import math
 import scipy
 import scipy.stats
 from collections import namedtuple
-import PyNonpar
+import PyNonpar.pseudorank
 
 
 def brunner_munzel_test(x: list, y: list, alternative="two.sided", quantile="t") -> list:
