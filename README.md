@@ -16,6 +16,7 @@ pip install PyNonpar
 
 ## Table of Contents
 **[Two-Sample Tests](#two-sample-tests)**<br>
+**[Paired Two-Sample Tests](#paired-two-sample-tests)**<br>
 **[Multi-Sample Tests](#multi-sample-tests)**<br>
 
 ## Pseudo-Ranks
@@ -71,6 +72,20 @@ PyNonpar.twosample.brunner_munzel_test(x, y, alternative="less", quantile = "nor
 
 ```
 
+### Paired Two-Sample Tests
+
+#### 1. Paired ranks test
+
+```Python
+import PyNonpar
+from PyNonpar import*
+
+x = [1, 2, 3, 4, 5, 7, 1, 1, 1]
+y = [4, 6, 8, 7, 6, 5, 9, 1, 1]
+
+PyNonpar.twosample_paired.paired_ranks_test(x, y, alternative="two.sided", quantile="normal")
+
+```
 
 ### Multi-Sample Tests
 
