@@ -2,6 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/PyNonpar.svg)](https://badge.fury.io/py/PyNonpar)
 [![Travis-CI Build Status](https://travis-ci.org/happma/PyNonpar.svg?branch=master)](https://travis-ci.org/happma/PyNonpar)
+[![Build status](https://ci.appveyor.com/api/projects/status/fyui24dq7oj59554?svg=true)](https://ci.appveyor.com/project/happma/pynonpar)
 [![codecov](https://codecov.io/gh/happma/PyNonpar/branch/master/graph/badge.svg)](https://codecov.io/gh/happma/PyNonpar)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d87d14eb59db450bb7e8f283ad6af7e2)](https://www.codacy.com/project/happma/PyNonpar/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=happma/PyNonpar&amp;utm_campaign=Badge_Grade_Dashboard)
 

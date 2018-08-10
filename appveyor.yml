@@ -4,6 +4,8 @@ environment:
   matrix:
     - PYTHON_VERSION: 3.6.5
       MINICONDA: C:\Miniconda36
+    - PYTHON_VERSION: 3.6.5
+      MINICONDA: C:\Miniconda36-x64
 
 init:
   - "ECHO %PYTHON_VERSION% %MINICONDA%"
