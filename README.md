@@ -81,7 +81,6 @@ or H0: p = 1/2 (var_equal = False). The two sided alternative is for both cases 
 
 p = Probability(X_i < Y_j) + 1/2 * Probability(X_i = Y_j) for i != j where (X_i, Y_i), (X_j, Y_j) are paired observations.
 
-For more details, see [1].
 ```Python
 import PyNonpar
 from PyNonpar import*
