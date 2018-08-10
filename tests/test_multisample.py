@@ -1,4 +1,5 @@
 import pytest
+import PyNonpar
 import PyNonpar.multisample
 
 x = [1, 1, 1, 1, 2, 3, 4, 5, 6]

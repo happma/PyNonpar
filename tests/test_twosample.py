@@ -1,4 +1,5 @@
 import pytest
+import PyNonpar
 import PyNonpar.twosample
 
 yes = [1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 4, 1, 1]
