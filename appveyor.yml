@@ -21,11 +21,19 @@ install:
   - conda info -a
   - "conda create -q -n test-environment python=%PYTHON_VERSION% numpy scipy nose"
   - activate test-environment
-  - pip install pandas pytest numba
   - pip install pipenv --upgrade-strategy=only-if-needed
   - pipenv install --dev .
-  - pipenv run pip install colorama
+  - pipenv run pip install colorama pandas pytest numba
 
 test_script:
   - pipenv run python -m pytest
+
+skip_commits:
+  files:
+    - docs/**/*
+    - "**/*.rst"
+    - "*.md"
+    - ".gitignore"
+    - ".travis.yml"
+    - LICENSE.txt
 
