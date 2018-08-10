@@ -7,6 +7,10 @@ environment:
     - PYTHON_VERSION: 3.6.5
       MINICONDA: C:\Miniconda36-x64
 
+
+matrix:
+  fast_finish: true
+
 init:
   - "ECHO %PYTHON_VERSION% %MINICONDA%"
 
@@ -18,8 +22,10 @@ install:
   - "conda create -q -n test-environment python=%PYTHON_VERSION% numpy scipy nose"
   - activate test-environment
   - pip install pandas pytest numba
+  - pip install pipenv --upgrade-strategy=only-if-needed
+  - pipenv install --dev .
   - pipenv run pip install colorama
 
 test_script:
-  - pytest
+  - pipenv run python -m pytest
 
