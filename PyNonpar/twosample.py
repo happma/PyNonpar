@@ -15,6 +15,7 @@ import scipy.stats
 import scipy.special
 from collections import namedtuple
 import PyNonpar.pseudorank
+import functools
 from functools import lru_cache
 
 
@@ -144,7 +145,7 @@ def hodges_lehmann(x: list, y: list, alpha = 0.05):
     output = result(hl, lower, upper)
     return output
 
-
+@functools.lru_cache(maxsize=1000)
 def _h(s, m, N, ranks):
     r = 0.0
     partial_sum_ranks = 0.0
@@ -225,18 +226,15 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
         result = namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue'))
         output = result(alternative, W_N, hl[0], hl[1], hl[2], p_value)
     elif method == "exact":
-        R_W = int(np.ceil(np.sum(y)))
+        R_W = np.sum(y)
         combinations = 0.0
         total_combinations = scipy.special.binom(N, m)
-        min_s = int(sum(list(range(1,m+1))))
-        max_s = int(sum(list(range(m+1,N+1))))
-        mean_s = int((min_s + max_s)*1/2)
-        diff_s = abs(R_W - mean_s)
 
         ranks.sort()
         ranks2 = [2*ranks[i] for i in range(N)]
+        ranks2 = tuple(ranks2)
 
-        for i in range(2*R_W):
+        for i in range(int(2*R_W)):
             combinations += _h(i, m, N, ranks2)
 
         if alternative == "two.sided":
@@ -249,3 +247,11 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
         output = result(alternative, R_W, hl[0], hl[1], hl[2], p_value)
 
     return output
+
+x = [8,4,10,4,9,1,3,3,4,8]
+y = [10,5,11,6,11,2,4,5,5,10]
+
+uu = wilcoxon_mann_whitney_test(x, y, alternative="greater", method = "exact", alpha = 0.05)
+ul = wilcoxon_mann_whitney_test(x, y, alternative="less", method = "exact", alpha = 0.05)
+print(uu)
+print(ul)

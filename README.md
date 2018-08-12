@@ -41,14 +41,16 @@ PyNonpar.pseudorank.psrank(x, group, ties_method = "average")
 
 ### Two-Sample Tests
 
-1. Asymptotic Wilcoxon-Mann-Whitney test: wilcoxon_mann_whitney_test()
+1. Wilcoxon-Mann-Whitney test: wilcoxon_mann_whitney_test()
 2. Brunner-Munzel test (Generalized Wilcoxon test): brunner_munzel_test()
 
 The Hodges-Lehmann estimator can be calculated in a location shift model: hodges_lehmann(). The confidence interval for this estimator is
 only asymptotic and assumes continuous distributions. 
 
-#### 1. Asymptotic Wilcoxon-Mann-Whitney test
+#### 1. Wilcoxon-Mann-Whitney test
 
+For large sample sizes is the asymptotic Wilcoxon test recommended (method = "asymptotic"). For small sample sizes,
+we recommend the exact Wilcoxon test.
 ```Python
 import PyNonpar
 from PyNonpar import*
@@ -56,7 +58,9 @@ from PyNonpar import*
 x = [8,4,10,4,9,1,3,3,4,8]
 y = [10,5,11,6,11,2,4,5,5,10]
 
-PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", alpha = 0.05)
+PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", method = "asymptotic", alpha = 0.05)
+PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", method = "exact", alpha = 0.05)
+
 ```
 
 #### 2. Brunner-Munzel test
