@@ -172,13 +172,14 @@ def _h(s, m, N, ranks):
 
 def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alpha = 0.05, method = "asymptotic"):
     """
-    Function to calculate the Wilcoxon-Mann-Whitney test. Exact test not yet implemented.
+    Function to calculate the Wilcoxon-Mann-Whitney test.
 
     Args:
         x (list(float)): data from first group \n
         y (list(float)): data from second group \n
         alternative (str): either 'two.sided', 'less' (x less y) or 'greater' (x greater y) \n
-        alpha (float): 1-alpha confidence interval (only valid if there are no ties)
+        alpha (float): 1-alpha confidence interval (only valid if there are no ties) \n
+        method (str): use 'asymptotic' for the asymptotic test (normal distribution) or the exact test with 'exact'.
 
     Returns:
         namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue')): \n
