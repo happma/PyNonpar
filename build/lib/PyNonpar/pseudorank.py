@@ -138,7 +138,7 @@ def psrank(data, group, ties_method = "average"):
         ties_method (str): either 'average', 'max' or 'min' for mid, max or min pseudo-ranks \n
 
     Returns:
-        list(float) of pseudo-ranks.
+        pseudo-ranks (list(float))
     """
 
     # Check inputs
