@@ -44,3 +44,15 @@ def test_wilcoxon_mann_whitney_test():
         raise AssertionError()
     if PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox, y_wilcox, alternative="two.sided")[-2] != 5:
         raise AssertionError()
+
+
+x_wilcox2 = [4,6,9,6,2,2]
+y_wilcox2 = [5,8,17,5,10,10]
+
+def test_wilcoxon_mann_whitney_test_exact():
+    if PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox2,y_wilcox2,method="exact",alternative="less")[-1] != pytest.approx(0.04329004329004327, 0.0001):
+        raise AssertionError()
+    if PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox2,y_wilcox2,method="exact",alternative="greater")[-1] != pytest.approx(0.9621212121212122, 0.0001):
+        raise AssertionError()
+    if PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox2,y_wilcox2,method="exact",alternative="two.sided")[-1] != pytest.approx(0.08658008658008653, 0.0001):
+        raise AssertionError

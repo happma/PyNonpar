@@ -12,8 +12,10 @@ import numpy as np
 import math
 import scipy
 import scipy.stats
+import scipy.special
 from collections import namedtuple
 import PyNonpar.pseudorank
+from functools import lru_cache
 
 
 def brunner_munzel_test(x: list, y: list, alternative="two.sided", quantile="t") -> list:
@@ -126,7 +128,7 @@ def hodges_lehmann(x: list, y: list, alpha = 0.05):
 
     for i in range(n):
         for j in range(m):
-            diff[i * m + j] = y[i] - x[j]
+            diff[i * m + j] = y[j] - x[i]
 
     hl = np.median(diff)
 
@@ -143,21 +145,45 @@ def hodges_lehmann(x: list, y: list, alpha = 0.05):
     return output
 
 
-def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alpha = 0.05):
+def _h(s, m, N, ranks):
+    r = 0.0
+    partial_sum_ranks = 0.0
+    for i in range(m):
+        partial_sum_ranks += ranks[i]
+
+    if s < 0:
+        r = 0
+    elif m == N:
+        if s == partial_sum_ranks:
+            r = 1
+        else:
+            r = 0
+    elif m == 0:
+        if s == 0:
+            r = 1
+        else:
+            r = 0
+    else:
+        r = _h(s,m,N-1,ranks) + _h(s-ranks[N-1],m-1,N-1,ranks)
+
+    return r
+
+
+def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alpha = 0.05, method = "asymptotic"):
     """
     Function to calculate the Wilcoxon-Mann-Whitney test. Exact test not yet implemented.
 
     Args:
         x (list(float)): data from first group \n
         y (list(float)): data from second group \n
-        alternative (str): either 'two.sided', 'less' or 'greater' \n
+        alternative (str): either 'two.sided', 'less' (x less y) or 'greater' (x greater y) \n
         alpha (float): 1-alpha confidence interval (only valid if there are no ties)
 
     Returns:
         namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue')): \n
         chosen alternative (str) \n
         test statistic (float)\n
-        hodges lehmann estimate for a location shift effect (float) \n
+        hodges lehmann estimate for a location shift effect y - x (float) \n
         lower bound for 1-alpha CI for location shift effect (float) \n
         upper bound for 1-alpha CI for location shift effect (float) \n
         p-value
@@ -179,22 +205,47 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
     R1 = np.mean(x)
     R2 = np.mean(y)
 
-    # variance estimator
-    sigma_R_squared = 0.0
-    for i in range(N):
-        sigma_R_squared += (ranks[i] - (N + 1)*1/2 ) ** 2
-    sigma_R_squared = sigma_R_squared*1/(N - 1)
+    # case asymptotic test
+    if method == "asymptotic":
+        # variance estimator
+        sigma_R_squared = 0.0
+        for i in range(N):
+            sigma_R_squared += (ranks[i] - (N + 1)*1/2 ) ** 2
+        sigma_R_squared = sigma_R_squared*1/(N - 1)
 
-    W_N = math.sqrt(n*m*1/N)*(R2 - R1)*1/math.sqrt(sigma_R_squared)
+        W_N = math.sqrt(n*m*1/N)*(R2 - R1)*1/math.sqrt(sigma_R_squared)
 
-    if alternative == "greater":
-        p_value = scipy.stats.norm.cdf(W_N)
-    elif alternative == "less":
-        p_value = 1 - scipy.stats.norm.cdf(W_N)
-    elif alternative == "two.sided":
-        p_value = 2 * min(scipy.stats.norm.cdf(W_N), 1 - scipy.stats.norm.cdf(W_N))
+        if alternative == "greater":
+            p_value = scipy.stats.norm.cdf(W_N)
+        elif alternative == "less":
+            p_value = 1 - scipy.stats.norm.cdf(W_N)
+        elif alternative == "two.sided":
+            p_value = 2 * min(scipy.stats.norm.cdf(W_N), 1 - scipy.stats.norm.cdf(W_N))
 
-    result = namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue'))
-    output = result(alternative, W_N, hl[0], hl[1], hl[2], p_value)
+        result = namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue'))
+        output = result(alternative, W_N, hl[0], hl[1], hl[2], p_value)
+    elif method == "exact":
+        R_W = int(np.ceil(np.sum(y)))
+        combinations = 0.0
+        total_combinations = scipy.special.binom(N, m)
+        min_s = int(sum(list(range(1,m+1))))
+        max_s = int(sum(list(range(m+1,N+1))))
+        mean_s = int((min_s + max_s)*1/2)
+        diff_s = abs(R_W - mean_s)
+
+        ranks.sort()
+        ranks2 = [2*ranks[i] for i in range(N)]
+
+        for i in range(2*R_W):
+            combinations += _h(i, m, N, ranks2)
+
+        if alternative == "two.sided":
+            p_value = 2*min(combinations/total_combinations + _h(2*R_W,m,N,ranks2)/total_combinations, 1 - combinations/total_combinations)
+        elif alternative == "greater":
+            p_value = combinations / total_combinations + _h(2*R_W,m,N,ranks2)/total_combinations
+        elif alternative == "less":
+            p_value = 1 - combinations / total_combinations
+        result = namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue'))
+        output = result(alternative, R_W, hl[0], hl[1], hl[2], p_value)
 
     return output
