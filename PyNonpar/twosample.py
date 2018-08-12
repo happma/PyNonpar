@@ -247,11 +247,3 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
         output = result(alternative, R_W, hl[0], hl[1], hl[2], p_value)
 
     return output
-
-x = [8,4,10,4,9,1,3,3,4,8]
-y = [10,5,11,6,11,2,4,5,5,10]
-
-uu = wilcoxon_mann_whitney_test(x, y, alternative="greater", method = "exact", alpha = 0.05)
-ul = wilcoxon_mann_whitney_test(x, y, alternative="less", method = "exact", alpha = 0.05)
-print(uu)
-print(ul)
