@@ -6,4 +6,3 @@ pytest
 pytest-rerunfailures
 pytest-cov
 codecov
-functools

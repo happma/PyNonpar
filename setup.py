@@ -23,7 +23,6 @@ setup(
         'pytest-cov',
         'codecov',
         'numba',
-        'functools',
     ],
     classifiers=(
         "Development Status :: 2 - Pre-Alpha",
