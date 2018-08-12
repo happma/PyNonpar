@@ -27,11 +27,11 @@ def brunner_munzel_test(x: list, y: list, alternative="two.sided", quantile="t")
         quantile (str): either 't' for the small sample approximation with a t-distribution or 'normal' for the large sample procedure. \n
 
     Returns:
-        str: chosen alternative \n
-        list(int): trend \n
-        float: test statistic \n
-        float: estimated degrees of freedom for the t-approximation (only when quantile = 't') \n
-        float:  p-value
+        namedtuple('BrunnerMunzelResult', ('alternative', 'statistic', 'df', 'pvalue')): \n
+        chosen alternative (str) \n
+        test statistic (float)\n
+        estimated degrees of freedom for the t-approximation, only when quantile = 't' (float) \n
+        p-value (float)
     """
 
     # Check inputs
@@ -115,9 +115,10 @@ def hodges_lehmann(x: list, y: list, alpha = 0.05):
         y (list(float)): data from second group \n
 
     Returns:
-        float: Hodges-Lehmann estimator theta_hat \n
-        float: lower bound for the asymptotic 1-alpha/2 confidence interval for theta \n
-        float: upper bound for the 1-alpha/2 confidence interval for theta \n
+        namedtuple('HodgesLehmannEstimator', ('estimate', 'lowerCI', 'upperCI')):\n
+        Hodges-Lehmann estimator theta_hat (float) \n
+        lower bound for the asymptotic 1-alpha/2 confidence interval for theta (float)\n
+        upper bound for the 1-alpha/2 confidence interval for theta (float) \n
     """
     n = len(x)
     m = len(y)
@@ -150,16 +151,16 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
         x (list(float)): data from first group \n
         y (list(float)): data from second group \n
         alternative (str): either 'two.sided', 'less' or 'greater' \n
-        alpha (float): 1-alpha/2 confidence interval (only valid if there are no ties)
+        alpha (float): 1-alpha confidence interval (only valid if there are no ties)
 
     Returns:
-        str: chosen alternative \n
-        list(int): trend \n
-        float: test statistic \n
-        float: hodges lehmann estimate for a location shift effect \n
-        float: lower bound for 1-alpha/2 CI for location shift effect \n
-        float: upper bound for 1-alpha/2 CI for location shift effect \n
-        float:  p-value
+        namedtuple('WilcoxonMannWhitneyResult', ('alternative', 'statistic', 'HodgesLehmann', 'lowerCI', 'upperCI', 'pvalue')): \n
+        chosen alternative (str) \n
+        test statistic (float)\n
+        hodges lehmann estimate for a location shift effect (float) \n
+        lower bound for 1-alpha CI for location shift effect (float) \n
+        upper bound for 1-alpha CI for location shift effect (float) \n
+        p-value
     """
 
     n = len(x)

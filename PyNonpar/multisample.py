@@ -28,8 +28,9 @@ def kruskal_wallis_test(data, group, pseudoranks = True):
         pseudoranks (bool): True if pseudo-ranks instead of ranks are used \n
 
     Returns:
-        float: test statistic \n
-        float:  p-value
+        namedtuple('KruskalWallisResult', ('statistic', 'pvalue')):\n
+        test statistic (float)\n
+        p-value (float)
     """
 
     N = len(data)
@@ -80,10 +81,11 @@ def hettmansperger_norton_test(data, group, alternative = "increasing", trend = 
         trend (list(float)): a vector specifying the alternative; only used, if alternative = 'custom' \n
 
     Returns:
-        str: chosen alternative \n
-        list(int): trend \n
-        float: test statistic \n
-        float: one sided p-value
+        namedtuple('HettmanspergerNortonResult', ('alternative', 'weight', 'statistic', 'pvalue')): \n
+        chosen alternative (str) \n
+        trend (list(float))\n
+        test statistic (float)\n
+        one sided p-value (float)
 
     References:
         Hettmansperger, T. P., & Norton, R. M. (1987). Tests for patterned alternatives in k-sample problems. Journal of the American Statistical Association, 82(397), 292-299.

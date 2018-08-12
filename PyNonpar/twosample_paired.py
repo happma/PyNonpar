@@ -31,12 +31,13 @@ def paired_ranks_test(x, y, alternative = "two.sided", var_equal = False, quanti
 
 
     Returns:
-        str: chosen alternative \n
-        float: test statistic \n
-        float: pHat Probablity(x_i < y_j) + Probablity(x_i = y_j), i != j \n
-        float: lower 1-alpha CI for pHat \n
-        float: upper 1-alpha CI for pHat \n
-        float:  p-value
+        namedtuple('BrunnerMunzelResult', ('alternative', 'statistic', 'df', 'pHat', 'lowerCI', 'upperCI', 'pvalue')): \n
+        chosen alternative (str)\n
+        test statistic (float) \n
+        pHat Probablity(x_i < y_j) + 1/2*Probablity(x_i = y_j), i != j (float) \n
+        lower 1-alpha CI for pHat (float)\n
+        upper 1-alpha CI for pHat (float) \n
+        p-value (float)
     """
 
     data = x + y
