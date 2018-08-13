@@ -7,7 +7,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d87d14eb59db450bb7e8f283ad6af7e2)](https://www.codacy.com/project/happma/PyNonpar/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=happma/PyNonpar&amp;utm_campaign=Badge_Grade_Dashboard)
 
 Test statistics based on ranks may lead to paradoxical results. A solution are so-called pseudo-ranks.
-This package provides a function to calculate pseudo-ranks which are used in nonparametric statistics for rank tests.
+This package provides a function to calculate pseudo-ranks as well as nonparametric, (pseudo)-rank statistics.
 For a definition and discussion of pseudo-ranks, see for example [1].
 
 To install the package from PyPI, simply type
@@ -50,7 +50,9 @@ only asymptotic and assumes continuous distributions.
 #### 1. Wilcoxon-Mann-Whitney test
 
 For large sample sizes is the asymptotic Wilcoxon test recommended (method = "asymptotic"). For small sample sizes,
-we recommend the exact Wilcoxon test.
+we recommend the exact Wilcoxon test. Note that the Wilcoxon test assumes the null hypothesis of equal distributions
+H0: F1 = F2.
+
 ```Python
 import PyNonpar
 from PyNonpar import*
@@ -64,6 +66,7 @@ PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", method =
 ```
 
 #### 2. Brunner-Munzel test
+The Brunner-Munzel test extends the Wilcoxon test to the null hypothesis H0: p = 1/2.
 
 ```Python
 import PyNonpar
