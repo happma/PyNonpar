@@ -170,5 +170,6 @@ PyNonpar.repeated_measures.kepner_robinson_test(data, time, subject, distributio
 
 ## References
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.
+
 [2] Kepner, J. L., & Robinson, D. H. (1988). Nonparametric methods for detecting treatment effects in repeated-measures designs. Journal of the American Statistical Association, 83(402), 456-461.
 
