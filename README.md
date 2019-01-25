@@ -143,10 +143,32 @@ PyNonpar.multisample.kruskal_wallis_test(x, group, pseudoranks = False)
 ```
 
 ### Repeated-Measures Tests
+1. The Paired-Ranks Test: paired_ranks_test()
+2. The Kepner-Robinson Test Test: kepner_robinson_test()
 
-#### Kepner-Robinson Test
+#### 1. Paired ranks test
+See Section ''Paired Twosample Tests''.
+
+#### 2. Kepner-Robinson Test
+For the Kepner-Robinson Test we have several dependent observations per subject (subplot factor). Let us denote with F_k the cdf for the k-th observation. The null hypothesis for this test is
+H_0: F_1 = ... F_d where d is the number of observations per subject. This test assumes for the dependence structure a compound symmetry, that is, all variances are the same and all covariances are the same. In other words, the observations on one subject can basically be interchanged.
+For more information, we refer to [2].
+
+
+```Python
+import PyNonpar
+from PyNonpar import*
+
+# some artificial data
+data = [1, 0, -2, -1, -2, 1, 0, 0, 0, -2]
+time = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+subject = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+
+PyNonpar.repeated_measures.kepner_robinson_test(data, time, subject, distribution="F")
+```
 
 
 ## References
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.
+[2] Kepner, J. L., & Robinson, D. H. (1988). Nonparametric methods for detecting treatment effects in repeated-measures designs. Journal of the American Statistical Association, 83(402), 456-461.
 
