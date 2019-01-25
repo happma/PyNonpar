@@ -20,6 +20,7 @@ pip install PyNonpar
 **[Two-Sample Tests](#two-sample-tests)**<br>
 **[Paired Two-Sample Tests](#paired-two-sample-tests)**<br>
 **[Multi-Sample Tests](#multi-sample-tests)**<br>
+**[Repeated-Measures Tests](#repeated-measures-tests)**<br>
 
 ## Pseudo-Ranks
 If there are ties (i.e., observations with the same value) in the data, then the pseudo-ranks have to be adjusted. There
@@ -140,6 +141,11 @@ PyNonpar.multisample.kruskal_wallis_test(x, group, pseudoranks = True)
 # Using ranks
 PyNonpar.multisample.kruskal_wallis_test(x, group, pseudoranks = False)
 ```
+
+### Repeated-Measures Tests
+
+#### Kepner-Robinson Test
+
 
 ## References
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.
