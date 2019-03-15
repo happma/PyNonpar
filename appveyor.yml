@@ -15,9 +15,9 @@ init:
   - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%PATH%"
 
 install:
-  - conda install pip numpy scipy
   - conda config --set always_yes yes --set changeps1 no
   - conda config --add channels conda-forge
+  - conda install pip numpy scipy
   - conda update -q conda
   - "python -m pip install --upgrade pip"
   - "pip install -q pytest"
