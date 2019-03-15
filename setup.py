@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='PyNonpar',
-    version='0.0.6',
+    version='0.2.0',
     packages=['PyNonpar'],
     url='https://github.com/happma/PyNonpar',
     license='GPL-3',

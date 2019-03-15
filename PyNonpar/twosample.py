@@ -248,3 +248,80 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
         output = result(alternative, R_W, hl[0], hl[1], hl[2], p_value)
 
     return output
+
+
+
+def wilcoxon_mann_whitney_ssp(x: list, y: list, power = 0.8, alpha = 0.05, t = 1/2):
+    """
+    Function to calculate the Wilcoxon-Mann-Whitney test.
+
+    Args:
+        x (list(float)): prior information from first group \n
+        y (list(float)): prior information from second group \n
+        power (float): probablity to detect an effect based on prior information \n
+        alpha (float): type-I error probability \n
+        t (float): ratio of subjects assigned to first group.
+
+    Returns:
+        namedtuple('WilcoxonMannWhitneyResult', ('alpha', 'power', 'relEffect', 'N', 't', 'n1', 'n2', 'Nrounded', 'n1rouned', 'n2rouned')): \n
+        alpha (float) \n
+        power(float)\n
+        relEffect (float): calculated relative Effect \n
+        N (float): minimal sample size required \n
+        n1 (float): sample size for group 1 required; N = t*n1 \n
+        n2 (float): sample size for group 2 required; N = (1-t)*n1
+    """
+
+    m1 = len(x)
+    m2 = len(y)
+
+    data = x + y
+    N = len(data)
+
+    ranks = [0 for i in range(N)]
+    ranks = PyNonpar.pseudorank.psrank(data, ranks)
+
+    R1 = ranks[:m1]
+    R2 = ranks[m1:]
+
+    # ranks within samples:
+    R11 = PyNonpar.pseudorank.psrank(x, [0 for i in range(m1)])
+    R22 = PyNonpar.pseudorank.psrank(y, [0 for i in range(m2)])
+
+    # placements
+    P1 = [0 for i in range(m1)]
+    P2 = [0 for i in range(m2)]
+
+    for i in range(m1):
+        P1[i] = R1[i] - R11[i]
+    for i in range(m2):
+        P2[i] = R2[i] - R22[i]
+
+    # effect size:
+    pStar = (np.mean(R2) - np.mean(R1)) / (m1 + m2) + 0.5
+
+    # variances:
+    sigmaStar = 0.0
+    for i in range(m1+m2):
+        sigmaStar += (ranks[i] - (m1 + m2) / 2) ** 2
+    sigmaStar = np.sqrt( sigmaStar * 1/(m1 + m2) ** 3 )
+
+    sigma1Star = 0.0
+    for i in range(m1):
+        sigma1Star += (P1[i] - np.mean(P1)) ** 2
+    sigma1Star = np.sqrt( sigma1Star * 1/(m1 * m2 * m2)  )
+
+    sigma2Star = 0.0
+    for i in range(m2):
+        sigma2Star += (P2[i] - np.mean(P2)) ** 2
+    sigma2Star = np.sqrt( sigma2Star * 1/(m1 * m1 * m2)  )
+
+    # estimated sample size:
+    N = (sigmaStar * scipy.stats.norm.ppf(1 - alpha / 2) + scipy.stats.norm.ppf(power) * np.sqrt(t * sigma2Star ** 2 + (1 - t) * sigma1Star ** 2)) ** 2 * 1/ (t * (1 - t) * (pStar - 0.5) ** 2)
+    n1 = N * t
+    n2 = N * (1 - t)
+
+    result = namedtuple('WilcoxonMannWhitneySampleSize', ('alpha', 'power', 'relEffect', 'N', 't', 'n1', 'n2', 'Nrounded', 'n1rouned', 'n2rouned'))
+    output = result(alpha, power, pStar, N, t, n1, n2, math.ceil(N), math.ceil(n1), math.ceil(n2))
+
+    return output

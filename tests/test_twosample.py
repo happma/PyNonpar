@@ -62,3 +62,16 @@ def test_wilcoxon_mann_whitney_test_exact():
         raise AssertionError()
     if PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox3, y_wilcox3, alternative="less", method="exact", alpha=0.05)[-1] != pytest.approx(0.0837915954015025, 0.0001):
         raise AssertionError()
+
+x_ssp = [315, 375, 356, 374, 412, 418, 445, 403, 431, 410, 391, 475, 379]
+y_ssp = [295, 355, 336, 354, 392, 398, 425, 383, 411, 390, 371, 455, 359]
+result_WMWsspN = 111.3719511
+result_WMWsspp = 0.3491124
+
+print(PyNonpar.twosample.wilcoxon_mann_whitney_ssp(x_ssp, y_ssp, 0.8, 0.05, 1/2))
+
+def test_wilcoxon_mann_whitney_ssp():
+    if PyNonpar.twosample.wilcoxon_mann_whitney_ssp(x_ssp, y_ssp, 0.8, 0.05, 1/2)[3] != pytest.approx(111.3719511, 0.01):
+        raise AssertionError()
+    if PyNonpar.twosample.wilcoxon_mann_whitney_ssp(x_ssp, y_ssp, 0.8, 0.05, 1/2)[2] != pytest.approx(0.3491124, 0.01):
+        raise AssertionError()

@@ -67,6 +67,25 @@ PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", method =
 
 ```
 
+##### Wilcoxon-Mann-Whitney Sample Size Planning
+To calculate the sample size which is needed to detect a specific relative effect p with probability beta and type-I error
+alpha, the function'wilcoxon_mann_whitney_ssp' can be used. Here, prior information for one group is needed.
+The artificial data for the second group can be created by some interpretable effect, e.g. a location shift effect.
+For more information, see [3] or [4].
+
+```Python
+import PyNonpar
+from PyNonpar import*
+
+# pior information
+x_ssp = [315, 375, 356, 374, 412, 418, 445, 403, 431, 410, 391, 475, 379]
+# y_ssp = x_ssp - 20
+y_ssp = [295, 355, 336, 354, 392, 398, 425, 383, 411, 390, 371, 455, 359]
+
+PyNonpar.twosample_paired.paired_ranks_ssp(x_ssp, y_ssp, 0.8, 0.05, 1/2)
+```
+
+
 #### 2. Brunner-Munzel test
 The Brunner-Munzel test extends the Wilcoxon test to the null hypothesis H0: p = 1/2.
 
@@ -171,4 +190,6 @@ PyNonpar.repeated_measures.kepner_robinson_test(data, time, subject, distributio
 ## References
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.
 [2] Kepner, J. L., & Robinson, D. H. (1988). Nonparametric methods for detecting treatment effects in repeated-measures designs. Journal of the American Statistical Association, 83(402), 456-461.
+[3] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear,
+[4] Happ, M., Bathke, A. C., & Brunner, E. (2019). Optimal sample size planning for the Wilcoxon‐Mann‐Whitney test. Statistics in medicine, 38(3), 363-375.
 
