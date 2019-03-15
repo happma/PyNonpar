@@ -6,6 +6,8 @@
 [![codecov](https://codecov.io/gh/happma/PyNonpar/branch/master/graph/badge.svg)](https://codecov.io/gh/happma/PyNonpar)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d87d14eb59db450bb7e8f283ad6af7e2)](https://www.codacy.com/project/happma/PyNonpar/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=happma/PyNonpar&amp;utm_campaign=Badge_Grade_Dashboard)
 [![Downloads](https://pepy.tech/badge/pynonpar/week)](https://pepy.tech/project/pynonpar)
+[![DOI](https://zenodo.org/badge/143191938.svg)](https://zenodo.org/badge/latestdoi/143191938)
+
 
 Test statistics based on ranks may lead to paradoxical results. A solution are so-called pseudo-ranks.
 This package provides a function to calculate pseudo-ranks as well as nonparametric, (pseudo)-rank statistics.
