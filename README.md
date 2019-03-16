@@ -73,7 +73,7 @@ PyNonpar.twosample.wilcoxon_mann_whitney_test(x, y, alternative="less", method =
 To calculate the sample size which is needed to detect a specific relative effect p with probability beta and type-I error
 alpha, the function'wilcoxon_mann_whitney_ssp' can be used. Here, prior information for one group is needed.
 The artificial data for the second group can be created by some interpretable effect, e.g. a location shift effect.
-For more information, see [3] or [4].
+For more information, see [1] or [3].
 
 ```Python
 import PyNonpar
@@ -193,6 +193,6 @@ PyNonpar.repeated_measures.kepner_robinson_test(data, time, subject, distributio
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.
 
 [2] Kepner, J. L., & Robinson, D. H. (1988). Nonparametric methods for detecting treatment effects in repeated-measures designs. Journal of the American Statistical Association, 83(402), 456-461.
-[3] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear,
-[4] Happ, M., Bathke, A. C., & Brunner, E. (2019). Optimal sample size planning for the Wilcoxon‐Mann‐Whitney test. Statistics in medicine, 38(3), 363-375.
+
+[3] Happ, M., Bathke, A. C., & Brunner, E. (2019). Optimal sample size planning for the Wilcoxon‐Mann‐Whitney test. Statistics in medicine, 38(3), 363-375.
 
