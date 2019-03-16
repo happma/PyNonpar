@@ -253,7 +253,7 @@ def wilcoxon_mann_whitney_test(x: list, y: list, alternative = "two.sided", alph
 
 def wilcoxon_mann_whitney_ssp(x: list, y: list, power = 0.8, alpha = 0.05, t = 1/2):
     """
-    Function to calculate the Wilcoxon-Mann-Whitney test.
+    Function to do sample size planning for the WMW test.
 
     Args:
         x (list(float)): prior information from first group \n

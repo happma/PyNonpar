@@ -46,11 +46,11 @@
 <p class="last">quantile (str): either ‘t’ for the small sample approximation with a t-distribution or ‘normal’ for the large sample procedure.</p>
 </dd>
 <dt>Returns:</dt>
-<dd><p class="first">str: chosen alternative</p>
-<p>list(int): trend</p>
-<p>float: test statistic</p>
-<p>float: estimated degrees of freedom for the t-approximation (only when quantile = ‘t’)</p>
-<p class="last">float:  p-value</p>
+<dd><p class="first">namedtuple(‘BrunnerMunzelResult’, (‘alternative’, ‘statistic’, ‘df’, ‘pvalue’)):</p>
+<p>chosen alternative (str)</p>
+<p>test statistic (float)</p>
+<p>estimated degrees of freedom for the t-approximation, only when quantile = ‘t’ (float)</p>
+<p class="last">p-value (float)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -68,32 +68,58 @@
 <p class="last">y (list(float)): data from second group</p>
 </dd>
 <dt>Returns:</dt>
-<dd><p class="first">float: Hodges-Lehmann estimator theta_hat</p>
-<p>float: lower bound for the asymptotic 1-alpha/2 confidence interval for theta</p>
-<p class="last">float: upper bound for the 1-alpha/2 confidence interval for theta</p>
+<dd><p class="first">namedtuple(‘HodgesLehmannEstimator’, (‘estimate’, ‘lowerCI’, ‘upperCI’)):</p>
+<p>Hodges-Lehmann estimator theta_hat (float)</p>
+<p>lower bound for the asymptotic 1-alpha/2 confidence interval for theta (float)</p>
+<p class="last">upper bound for the 1-alpha/2 confidence interval for theta (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="twosample.wilcoxon_mann_whitney_ssp">
+<code class="descclassname">twosample.</code><code class="descname">wilcoxon_mann_whitney_ssp</code><span class="sig-paren">(</span><em>x: list</em>, <em>y: list</em>, <em>power=0.8</em>, <em>alpha=0.05</em>, <em>t=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twosample.html#wilcoxon_mann_whitney_ssp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twosample.wilcoxon_mann_whitney_ssp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to do sample size planning for the WMW test.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">x (list(float)): prior information from first group</p>
+<p>y (list(float)): prior information from second group</p>
+<p>power (float): probablity to detect an effect based on prior information</p>
+<p>alpha (float): type-I error probability</p>
+<p class="last">t (float): ratio of subjects assigned to first group.</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">namedtuple(‘WilcoxonMannWhitneyResult’, (‘alpha’, ‘power’, ‘relEffect’, ‘N’, ‘t’, ‘n1’, ‘n2’, ‘Nrounded’, ‘n1rouned’, ‘n2rouned’)):</p>
+<p>alpha (float)</p>
+<p>power(float)</p>
+<p>relEffect (float): calculated relative Effect</p>
+<p>N (float): minimal sample size required</p>
+<p>n1 (float): sample size for group 1 required; N = t*n1</p>
+<p class="last">n2 (float): sample size for group 2 required; N = (1-t)*n1</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="twosample.wilcoxon_mann_whitney_test">
-<code class="descclassname">twosample.</code><code class="descname">wilcoxon_mann_whitney_test</code><span class="sig-paren">(</span><em>x: list</em>, <em>y: list</em>, <em>alternative='two.sided'</em>, <em>alpha=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twosample.html#wilcoxon_mann_whitney_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twosample.wilcoxon_mann_whitney_test" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the Wilcoxon-Mann-Whitney test. Exact test not yet implemented.</p>
+<code class="descclassname">twosample.</code><code class="descname">wilcoxon_mann_whitney_test</code><span class="sig-paren">(</span><em>x: list</em>, <em>y: list</em>, <em>alternative='two.sided'</em>, <em>alpha=0.05</em>, <em>method='asymptotic'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twosample.html#wilcoxon_mann_whitney_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twosample.wilcoxon_mann_whitney_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to calculate the Wilcoxon-Mann-Whitney test.</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><p class="first">x (list(float)): data from first group</p>
 <p>y (list(float)): data from second group</p>
-<p>alternative (str): either ‘two.sided’, ‘less’ or ‘greater’</p>
-<p class="last">alpha (float): 1-alpha/2 confidence interval (only valid if there are no ties)</p>
+<p>alternative (str): either ‘two.sided’, ‘less’ (x less y) or ‘greater’ (x greater y)</p>
+<p>alpha (float): 1-alpha confidence interval (only valid if there are no ties)</p>
+<p class="last">method (str): use ‘asymptotic’ for the asymptotic test (normal distribution) or the exact test with ‘exact’.</p>
 </dd>
 <dt>Returns:</dt>
-<dd><p class="first">str: chosen alternative</p>
-<p>list(int): trend</p>
-<p>float: test statistic</p>
-<p>float: hodges lehmann estimate for a location shift effect</p>
-<p>float: lower bound for 1-alpha/2 CI for location shift effect</p>
-<p>float: upper bound for 1-alpha/2 CI for location shift effect</p>
-<p class="last">float:  p-value</p>
+<dd><p class="first">namedtuple(‘WilcoxonMannWhitneyResult’, (‘alternative’, ‘statistic’, ‘HodgesLehmann’, ‘lowerCI’, ‘upperCI’, ‘pvalue’)):</p>
+<p>chosen alternative (str)</p>
+<p>test statistic (float)</p>
+<p>hodges lehmann estimate for a location shift effect y - x (float)</p>
+<p>lower bound for 1-alpha CI for location shift effect (float)</p>
+<p>upper bound for 1-alpha CI for location shift effect (float)</p>
+<p class="last">p-value</p>
 </dd>
 </dl>
 </dd></dl>

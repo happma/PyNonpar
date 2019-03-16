@@ -46,11 +46,9 @@
 <span class="kn">import</span> <span class="nn">PyNonpar.pseudorank</span> <span class="k">as</span> <span class="nn">ps</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">chi2</span>
-<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-<span class="kn">import</span> <span class="nn">PyNonpar</span>
+<span class="kn">import</span> <span class="nn">PyNonpar.pseudorank</span>
 
 <div class="viewcode-block" id="kruskal_wallis_test"><a class="viewcode-back" href="../multisample.html#multisample.kruskal_wallis_test">[docs]</a><span class="k">def</span> <span class="nf">kruskal_wallis_test</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">pseudoranks</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -63,8 +61,9 @@
 <span class="sd">        pseudoranks (bool): True if pseudo-ranks instead of ranks are used \n</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        float: test statistic \n</span>
-<span class="sd">        float:  p-value</span>
+<span class="sd">        namedtuple(&#39;KruskalWallisResult&#39;, (&#39;statistic&#39;, &#39;pvalue&#39;)):\n</span>
+<span class="sd">        test statistic (float)\n</span>
+<span class="sd">        p-value (float)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -115,10 +114,11 @@
 <span class="sd">        trend (list(float)): a vector specifying the alternative; only used, if alternative = &#39;custom&#39; \n</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: chosen alternative \n</span>
-<span class="sd">        list(int): trend \n</span>
-<span class="sd">        float: test statistic \n</span>
-<span class="sd">        float: one sided p-value</span>
+<span class="sd">        namedtuple(&#39;HettmanspergerNortonResult&#39;, (&#39;alternative&#39;, &#39;weight&#39;, &#39;statistic&#39;, &#39;pvalue&#39;)): \n</span>
+<span class="sd">        chosen alternative (str) \n</span>
+<span class="sd">        trend (list(float))\n</span>
+<span class="sd">        test statistic (float)\n</span>
+<span class="sd">        one sided p-value (float)</span>
 
 <span class="sd">    References:</span>
 <span class="sd">        Hettmansperger, T. P., &amp; Norton, R. M. (1987). Tests for patterned alternatives in k-sample problems. Journal of the American Statistical Association, 82(397), 292-299.</span>
@@ -178,10 +178,6 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">(</span><span class="n">alternative</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">test_hettmansperger</span><span class="p">,</span> <span class="n">p_value</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">output</span></div>
-
-<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.9</span> <span class="p">,</span>  <span class="mi">3</span> <span class="p">,</span>  <span class="mf">2.5</span> <span class="p">,</span>  <span class="mf">2.6</span> <span class="p">,</span>  <span class="mf">3.2</span> <span class="p">,</span>  <span class="mf">3.8</span> <span class="p">,</span>  <span class="mf">2.7</span> <span class="p">,</span>  <span class="mi">4</span> <span class="p">,</span>  <span class="mf">2.4</span> <span class="p">,</span>  <span class="mf">2.8</span> <span class="p">,</span>  <span class="mf">3.4</span> <span class="p">,</span>  <span class="mf">3.7</span> <span class="p">,</span>  <span class="mf">2.2</span> <span class="p">,</span>  <span class="mi">2</span> <span class="p">]</span>
-<span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">kruskal_wallis_test</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 
           </div>

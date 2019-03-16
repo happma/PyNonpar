@@ -45,10 +45,11 @@
 <p class="last">trend (list(float)): a vector specifying the alternative; only used, if alternative = ‘custom’</p>
 </dd>
 <dt>Returns:</dt>
-<dd><p class="first">str: chosen alternative</p>
-<p>list(int): trend</p>
-<p>float: test statistic</p>
-<p class="last">float: one sided p-value</p>
+<dd><p class="first">namedtuple(‘HettmanspergerNortonResult’, (‘alternative’, ‘weight’, ‘statistic’, ‘pvalue’)):</p>
+<p>chosen alternative (str)</p>
+<p>trend (list(float))</p>
+<p>test statistic (float)</p>
+<p class="last">one sided p-value (float)</p>
 </dd>
 <dt>References:</dt>
 <dd>Hettmansperger, T. P., &amp; Norton, R. M. (1987). Tests for patterned alternatives in k-sample problems. Journal of the American Statistical Association, 82(397), 292-299.</dd>
@@ -67,8 +68,9 @@
 <p class="last">pseudoranks (bool): True if pseudo-ranks instead of ranks are used</p>
 </dd>
 <dt>Returns:</dt>
-<dd><p class="first">float: test statistic</p>
-<p class="last">float:  p-value</p>
+<dd><p class="first">namedtuple(‘KruskalWallisResult’, (‘statistic’, ‘pvalue’)):</p>
+<p>test statistic (float)</p>
+<p class="last">p-value (float)</p>
 </dd>
 </dl>
 </dd></dl>
