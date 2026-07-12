@@ -8,16 +8,32 @@
 .. moduleauthor:: Martin Happ <martin.happ@aon.at>
 """
 
-import pandas as pd
-import numpy as np
-import PyNonpar.pseudorank as ps
 import math
+from typing import Any, List, NamedTuple, Optional
+
+import numpy as np
+import pandas as pd
 import scipy
 import scipy.stats
-from collections import namedtuple
-import PyNonpar.pseudorank
 
-def kruskal_wallis_test(data, group, pseudoranks = True):
+import PyNonpar.pseudorank
+import PyNonpar.pseudorank as ps
+from PyNonpar._types import HettmanspergerAlternative
+
+
+class KruskalWallisResult(NamedTuple):
+    statistic: float
+    pvalue: float
+
+
+class HettmanspergerNortonResult(NamedTuple):
+    alternative: str
+    weight: Any
+    statistic: float
+    pvalue: float
+
+
+def kruskal_wallis_test(data: List[float], group: List, pseudoranks: bool = True) -> KruskalWallisResult:
     """
     Function to calculate the Kruskal-Wallis test. It is recommended to use pseudo-ranks as ranks may lead to paradoxical results.\n
     Null hypothesis H_0: F_1 = ... F_a
@@ -33,8 +49,15 @@ def kruskal_wallis_test(data, group, pseudoranks = True):
         p-value (float)
     """
 
+    # Check inputs
+    if not isinstance(data, list):
+        raise TypeError("data must be a list")
+    if not isinstance(group, list):
+        raise TypeError("group must be a list")
+    if not isinstance(pseudoranks, bool):
+        raise TypeError("pseudoranks must be a bool")
+
     N = len(data)
-    ranks = [0 for i in range(N)]
     if pseudoranks:
         ranks = PyNonpar.pseudorank.psrank(data, group)
     else:
@@ -47,30 +70,23 @@ def kruskal_wallis_test(data, group, pseudoranks = True):
     a = len(np.unique(df['grp']))
 
     # numerator
-    rank_means = [0.0 for i in range(a)]
-    n = [0 for i in range(a)]
+    grouped = df.groupby('grp')['data']
+    n_series = grouped.size()
+    rank_means_series = grouped.mean()
+    numerator = float(np.sum(n_series.to_numpy() * ( rank_means_series.to_numpy() - (N + 1)*1/2 ) ** 2))
 
-    numerator = 0.0
-    for i in range(a):
-        n[i] = len(df[df['grp'] == i]['data'])
-        rank_means[i] = np.mean( df[df['grp'] == i]['data'] )
-        numerator += n[i] * ( rank_means[i] - (N + 1)*1/2 ) ** 2
-
-    denominator = 0.0
-    for i in range(N):
-        denominator += ( df['data'][i] - (N + 1)*1/2 ) ** 2
+    denominator = float(np.sum(( df['data'].to_numpy() - (N + 1)*1/2 ) ** 2))
 
     Q_N = numerator*1/denominator*(N - 1)
 
-    p_value = 1 - scipy.stats.chi2.cdf(Q_N, a - 1)
+    p_value = float(1 - scipy.stats.chi2.cdf(Q_N, a - 1))
 
-    result = namedtuple('KruskalWallisResult', ('statistic', 'pvalue'))
-    output = result(Q_N, p_value)
-
-    return output
+    return KruskalWallisResult(Q_N, p_value)
 
 
-def hettmansperger_norton_test(data, group, alternative = "increasing", trend = None):
+def hettmansperger_norton_test(
+    data: List[float], group: List, alternative: HettmanspergerAlternative = "increasing", trend: Optional[List[float]] = None
+) -> HettmanspergerNortonResult:
     """
     Function to calculate the Hettmansperger-Norton test.
 
@@ -88,8 +104,23 @@ def hettmansperger_norton_test(data, group, alternative = "increasing", trend = 
         one sided p-value (float)
 
     References:
-        Hettmansperger, T. P., & Norton, R. M. (1987). Tests for patterned alternatives in k-sample problems. Journal of the American Statistical Association, 82(397), 292-299.
+        Hettmansperger, T. P., & Norton, R. M. (1987). Tests for patterned alternatives in
+        k-sample problems. Journal of the American Statistical Association, 82(397), 292-299.
     """
+
+    # Check inputs
+    if not isinstance(data, list):
+        raise TypeError("data must be a list")
+    if not isinstance(group, list):
+        raise TypeError("group must be a list")
+    if (not isinstance(alternative, str)) or (alternative not in ['increasing', 'decreasing', 'custom']):
+        raise TypeError("alternative must be either 'increasing', 'decreasing' or 'custom'")
+    a_groups = len(np.unique(group))
+    if alternative == "custom":
+        if not isinstance(trend, list):
+            raise TypeError("trend must be a list when alternative is 'custom'")
+        if len(trend) != a_groups:
+            raise ValueError("trend must have one entry per group")
 
     d = {'data': ps.psrank(data, group, ties_method = "average"), 'grp': group}
     df = pd.DataFrame(data=d)
@@ -105,15 +136,15 @@ def hettmansperger_norton_test(data, group, alternative = "increasing", trend = 
     N = len(df['data'])
     a = len(np.unique(df['codes']))
     n = [0 for x in range(a)]
-    p_hat = [0 for x in range(a)]
+    p_hat = [0.0 for x in range(a)]
 
     for i in range(0, a):
         tmp = df[df['codes'] == i]
         n[i] = len(tmp)
-        p_hat[i] = 1/N*(np.mean(tmp['data']) - 0.5)
+        p_hat[i] = 1/N*(float(np.mean(tmp['data'])) - 0.5)
 
     # define weight function for hypothesis testing
-    w = np.arange(1, (a + 1))
+    w: Any = np.arange(1, (a + 1))
 
     if alternative == "decreasing":
         w = w[::-1]
@@ -129,19 +160,14 @@ def hettmansperger_norton_test(data, group, alternative = "increasing", trend = 
     W = np.dot( mS, ( mI - np.dot( 1/N*mJ, mS ) )  )
 
     # variance estimator
-    sum_psranks_squared = 0
-    for i in range(N):
-        sum_psranks_squared += (df['data'].tolist()[i] - (N + 1)/2) ** 2
+    sum_psranks_squared = float(np.sum((df['data'].to_numpy() - (N + 1)/2) ** 2))
     sum_psranks_squared = (1/N **2)*1/(N-1)*sum_psranks_squared
 
     sigma_part = np.dot(W, w)
     sigma_hat_squared = N*sum_psranks_squared*np.dot(np.dot( sigma_part.transpose(), np.linalg.inv(mS) ), sigma_part )
 
     # test statistic
-    test_hettmansperger = math.sqrt(N)*np.dot(sigma_part.transpose(), p_hat)*1/math.sqrt(sigma_hat_squared)
-    p_value = 1 - scipy.stats.norm.cdf(test_hettmansperger)
+    test_hettmansperger = float(math.sqrt(N)*np.dot(sigma_part.transpose(), p_hat)*1/math.sqrt(sigma_hat_squared))
+    p_value = float(1 - scipy.stats.norm.cdf(test_hettmansperger))
 
-    result = namedtuple('HettmanspergerNortonResult', ('alternative', 'weight', 'statistic', 'pvalue'))
-    output = result(alternative, w, test_hettmansperger, p_value)
-
-    return output
+    return HettmanspergerNortonResult(alternative, w, test_hettmansperger, p_value)

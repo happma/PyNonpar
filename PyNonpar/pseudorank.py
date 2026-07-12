@@ -10,9 +10,13 @@
 
 """
 
-import pandas as pd
-import numpy as np
+from typing import List
+
 import numba as nu
+import numpy as np
+import pandas as pd
+
+from PyNonpar._types import TiesMethod
 
 
 @nu.jit(nopython=True)
@@ -128,7 +132,7 @@ def _psrank_min(data: list, group: list, N: int, n: list, a: int) -> list:
     return lpsrank
 
 
-def psrank(data, group, ties_method = "average"):
+def psrank(data: List[float], group: List, ties_method: TiesMethod = "average") -> List[float]:
     """
     Function to calculate pseudo-ranks.
 
