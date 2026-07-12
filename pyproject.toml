@@ -54,6 +54,7 @@ PyNonpar = ["py.typed"]
 [tool.ruff]
 line-length = 160
 target-version = "py39"
+extend-exclude = ["source", "build"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
