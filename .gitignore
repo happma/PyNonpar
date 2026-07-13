@@ -1,0 +1,17 @@
+build/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+.idea/
+dist/
+
+# AI assistant configuration/context files - not part of the published project
+CLAUDE.md
+.claude/

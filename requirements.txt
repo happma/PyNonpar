@@ -1,7 +1,3 @@
-pandas
-numpy
-scipy
-numba
-pytest
-pytest-cov<2.6.0
-codecov
+# Convenience file for dev installs: pip install -r requirements.txt
+# Canonical dependency list lives in pyproject.toml.
+-e .[dev]

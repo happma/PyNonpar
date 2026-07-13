@@ -5,7 +5,14 @@
 [![Downloads](https://pepy.tech/badge/pynonpar/week)](https://pepy.tech/project/pynonpar)
 [![DOI](https://zenodo.org/badge/143191938.svg)](https://zenodo.org/badge/latestdoi/143191938)
 
+## Why PyNonpar?
 
+Many statistical analyses require alternatives to classical
+parametric methods. While Python provides excellent general
+statistical functionality through scipy.stats, some advanced
+nonparametric procedures are not currently available.
+
+PyNonpar implements methods based on modern rank statistics, including pseudo-rank based inference.
 Test statistics based on ranks may lead to paradoxical results. A solution are so-called pseudo-ranks.
 This package provides a function to calculate pseudo-ranks as well as nonparametric, (pseudo)-rank statistics.
 For a definition and discussion of pseudo-ranks, see for example [1].
@@ -13,6 +20,28 @@ For a definition and discussion of pseudo-ranks, see for example [1].
 To install the package from PyPI, simply type
 ```
 pip install PyNonpar
+```
+
+## What's new in 0.3.0
+
+- All functions now accept **array-like input** — Python lists, tuples, `numpy.ndarray`, and
+  `pandas.Series` — matching the calling convention of `scipy.stats`. Existing code that passes
+  plain lists keeps working exactly as before.
+- Stricter, more consistent input validation across all functions: invalid options now raise a
+  clear `TypeError`/`ValueError` instead of silently producing an incorrect result.
+- Type hints and updated docstrings throughout.
+
+```Python
+import numpy as np
+import pandas as pd
+import PyNonpar
+from PyNonpar import*
+
+# array-like input is now accepted everywhere - not just plain lists
+x = np.array([8, 4, 10, 4, 9, 1, 3, 3, 4, 8])
+y = pd.Series([10, 5, 11, 6, 11, 2, 4, 5, 5, 10])
+
+PyNonpar.twosample.brunner_munzel_test(x, y, alternative="less", quantile="t")
 ```
 
 ## Table of Contents
@@ -185,6 +214,7 @@ subject = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
 PyNonpar.repeated_measures.kepner_robinson_test(data, time, subject, distribution="F")
 ```
 
+From version 0.2.1 and higher PyNonpar uses AI tools for code optimization. The mathematical and statistical part of PyNonpar are handled by a statistician.
 
 ## References
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.

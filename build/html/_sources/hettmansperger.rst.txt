@@ -1,5 +1,0 @@
-Hettmansperger-Norton test for patterned alternatives in k-sample problems
-===========================================================================
-
-.. automodule:: hettmansperger
-    :members:
