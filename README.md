@@ -5,7 +5,14 @@
 [![Downloads](https://pepy.tech/badge/pynonpar/week)](https://pepy.tech/project/pynonpar)
 [![DOI](https://zenodo.org/badge/143191938.svg)](https://zenodo.org/badge/latestdoi/143191938)
 
+## Why PyNonpar?
 
+Many statistical analyses require alternatives to classical
+parametric methods. While Python provides excellent general
+statistical functionality through scipy.stats, some advanced
+nonparametric procedures are not currently available.
+
+PyNonpar implements methods based on modern rank statistics, including pseudo-rank based inference.
 Test statistics based on ranks may lead to paradoxical results. A solution are so-called pseudo-ranks.
 This package provides a function to calculate pseudo-ranks as well as nonparametric, (pseudo)-rank statistics.
 For a definition and discussion of pseudo-ranks, see for example [1].
