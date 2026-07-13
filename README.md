@@ -185,6 +185,7 @@ subject = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
 PyNonpar.repeated_measures.kepner_robinson_test(data, time, subject, distribution="F")
 ```
 
+From version 0.2.1 and higher PyNonpar uses AI tools for code optimization. The mathematical and statistical part of PyNonpar are handled by a statistician.
 
 ## References
 [1] Brunner, E., Bathke A. C. and Konietschke, F: Rank- and Pseudo-Rank Procedures in Factorial Designs - Using R and SAS, Springer Verlag, to appear.

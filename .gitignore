@@ -11,3 +11,7 @@ __pycache__/
 coverage.xml
 .idea/
 dist/
+
+# AI assistant configuration/context files - not part of the published project
+CLAUDE.md
+.claude/

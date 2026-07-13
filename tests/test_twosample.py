@@ -9,12 +9,18 @@ no = [3, 3, 4, 3, 1, 2, 3, 1, 1, 5, 4]
 p_two = 0.005786
 p_less = 0.002893
 p_greater = 0.9971
+p_two_n = 0.001704142
+p_less_n = 0.0008520709
+p_greater_n = 0.9991479
 
 
 def test_brunner_munzel_test():
     assert PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="less", quantile="t").pvalue == pytest.approx(p_less, 0.01)
     assert PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="greater", quantile="t").pvalue == pytest.approx(p_greater, 0.01)
     assert PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="two.sided", quantile="t").pvalue == pytest.approx(p_two, 0.01)
+    assert PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="less", quantile="normal").pvalue == pytest.approx(p_less_n, 0.01)
+    assert PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="greater", quantile="normal").pvalue == pytest.approx(p_greater_n, 0.01)
+    assert PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="two.sided", quantile="normal").pvalue == pytest.approx(p_two_n, 0.01)
 
 
 def test_brunner_munzel_test_invalid_input():
