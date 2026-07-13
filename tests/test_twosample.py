@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 
 import PyNonpar
@@ -30,6 +32,17 @@ def test_brunner_munzel_test_invalid_input():
         PyNonpar.twosample.brunner_munzel_test(yes, no, quantile="bogus")
     with pytest.raises(TypeError):
         PyNonpar.twosample.brunner_munzel_test("not a list", no)
+    with pytest.raises(TypeError):
+        PyNonpar.twosample.brunner_munzel_test({"a": 1}, no)
+    with pytest.raises(TypeError):
+        PyNonpar.twosample.brunner_munzel_test(np.array([[1, 2], [3, 4]]), no)
+
+
+def test_brunner_munzel_test_array_like():
+    expected = PyNonpar.twosample.brunner_munzel_test(yes, no, alternative="two.sided", quantile="t")
+    assert PyNonpar.twosample.brunner_munzel_test(np.array(yes), np.array(no), alternative="two.sided", quantile="t") == expected
+    assert PyNonpar.twosample.brunner_munzel_test(tuple(yes), tuple(no), alternative="two.sided", quantile="t") == expected
+    assert PyNonpar.twosample.brunner_munzel_test(pd.Series(yes), pd.Series(no), alternative="two.sided", quantile="t") == expected
 
 
 x = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3]
@@ -43,6 +56,13 @@ def test_hodges_lehmann():
 def test_hodges_lehmann_invalid_input():
     with pytest.raises(TypeError):
         PyNonpar.twosample.hodges_lehmann("not a list", y)
+
+
+def test_hodges_lehmann_array_like():
+    expected = PyNonpar.twosample.hodges_lehmann(x, y)
+    assert PyNonpar.twosample.hodges_lehmann(np.array(x), np.array(y)) == expected
+    assert PyNonpar.twosample.hodges_lehmann(tuple(x), tuple(y)) == expected
+    assert PyNonpar.twosample.hodges_lehmann(pd.Series(x), pd.Series(y)) == expected
 
 
 x_wilcox = [8, 4, 10, 4, 9, 1, 3, 3, 4, 8]
@@ -67,6 +87,13 @@ def test_wilcoxon_mann_whitney_test_invalid_input():
         PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox, y_wilcox, alternative="bogus")
     with pytest.raises(TypeError):
         PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox, y_wilcox, method="bogus")
+
+
+def test_wilcoxon_mann_whitney_test_array_like():
+    expected = PyNonpar.twosample.wilcoxon_mann_whitney_test(x_wilcox, y_wilcox, alternative="two.sided")
+    assert PyNonpar.twosample.wilcoxon_mann_whitney_test(np.array(x_wilcox), np.array(y_wilcox), alternative="two.sided") == expected
+    assert PyNonpar.twosample.wilcoxon_mann_whitney_test(tuple(x_wilcox), tuple(y_wilcox), alternative="two.sided") == expected
+    assert PyNonpar.twosample.wilcoxon_mann_whitney_test(pd.Series(x_wilcox), pd.Series(y_wilcox), alternative="two.sided") == expected
 
 
 x_wilcox2 = [4, 6, 9, 6, 2, 2]
@@ -108,3 +135,10 @@ def test_wilcoxon_mann_whitney_ssp():
 def test_wilcoxon_mann_whitney_ssp_invalid_input():
     with pytest.raises(TypeError):
         PyNonpar.twosample.wilcoxon_mann_whitney_ssp("not a list", y_ssp)
+
+
+def test_wilcoxon_mann_whitney_ssp_array_like():
+    expected = PyNonpar.twosample.wilcoxon_mann_whitney_ssp(x_ssp, y_ssp, 0.8, 0.05, 1 / 2)
+    assert PyNonpar.twosample.wilcoxon_mann_whitney_ssp(np.array(x_ssp), np.array(y_ssp), 0.8, 0.05, 1 / 2) == expected
+    assert PyNonpar.twosample.wilcoxon_mann_whitney_ssp(tuple(x_ssp), tuple(y_ssp), 0.8, 0.05, 1 / 2) == expected
+    assert PyNonpar.twosample.wilcoxon_mann_whitney_ssp(pd.Series(x_ssp), pd.Series(y_ssp), 0.8, 0.05, 1 / 2) == expected

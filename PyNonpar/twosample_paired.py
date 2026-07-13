@@ -9,14 +9,15 @@
 """
 
 import math
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple, Optional
 
 import numpy as np
 import scipy
 import scipy.stats
+from numpy.typing import ArrayLike
 
 import PyNonpar.pseudorank
-from PyNonpar._types import Alternative, Quantile
+from PyNonpar._types import Alternative, Quantile, as_list
 
 
 class PairedRanksResult(NamedTuple):
@@ -30,7 +31,7 @@ class PairedRanksResult(NamedTuple):
 
 
 def paired_ranks_test(
-    x: List[float], y: List[float], alternative: Alternative = "two.sided", var_equal: bool = False, quantile: Quantile = "normal", alpha: float = 0.05
+    x: ArrayLike, y: ArrayLike, alternative: Alternative = "two.sided", var_equal: bool = False, quantile: Quantile = "normal", alpha: float = 0.05
 ) -> PairedRanksResult:
     """
     Function to calculate the Paired Ranks test. This test compares the marignal distributions with each other.\n
@@ -38,8 +39,8 @@ def paired_ranks_test(
     is H_0: p = 1/2 where p = Probablity(x_i < y_j) + 1/2 * Probablity(x_i = y_j), i != j.
 
     Args:
-        x (list(float)): data from first group \n
-        y (list(float)): data from second group \n
+        x (array_like): data from first group \n
+        y (array_like): data from second group \n
         alternative (str): either 'two.sided', 'less' or 'greater' \n
         var_equal (bool): False to use an adjustment for unequal distributions.\n
         quantile (str): either 't' for the small sample approximation with a t-distribution or 'normal' for the large sample procedure. \n
@@ -58,10 +59,8 @@ def paired_ranks_test(
     """
 
     # Check inputs
-    if not isinstance(x, list):
-        raise TypeError("x must be a list")
-    if not isinstance(y, list):
-        raise TypeError("y must be a list")
+    x = as_list(x, "x")
+    y = as_list(y, "y")
     if len(x) != len(y):
         raise ValueError("x and y must have equal length")
     if (not isinstance(alternative, str)) or (alternative not in ['two.sided', 'less', 'greater']):

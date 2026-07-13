@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyNonpar"
-version = "0.2.1"
+version = "0.3.0"
 description = "Nonparametric Test Statistics"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
@@ -57,7 +57,7 @@ target-version = "py39"
 extend-exclude = ["source", "build"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I"]
+select = ["E", "F", "W", "I", "UP"]
 
 [tool.mypy]
 python_version = "3.9"

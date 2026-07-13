@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 
 import PyNonpar
@@ -61,4 +63,17 @@ def test_paired_ranks_test_invalid_input():
     with pytest.raises(TypeError):
         PyNonpar.twosample_paired.paired_ranks_test(x, y, quantile="bogus")
     with pytest.raises(TypeError):
+        PyNonpar.twosample_paired.paired_ranks_test(x, y, var_equal="not a bool")
+    with pytest.raises(TypeError):
         PyNonpar.twosample_paired.paired_ranks_test("not a list", y)
+    with pytest.raises(TypeError):
+        PyNonpar.twosample_paired.paired_ranks_test({"a": 1}, y)
+    with pytest.raises(TypeError):
+        PyNonpar.twosample_paired.paired_ranks_test(np.array([[1, 2], [3, 4]]), y)
+
+
+def test_paired_ranks_test_array_like():
+    expected = PyNonpar.twosample_paired.paired_ranks_test(x, y, alternative="two.sided", quantile="normal")
+    assert PyNonpar.twosample_paired.paired_ranks_test(np.array(x), np.array(y), alternative="two.sided", quantile="normal") == expected
+    assert PyNonpar.twosample_paired.paired_ranks_test(tuple(x), tuple(y), alternative="two.sided", quantile="normal") == expected
+    assert PyNonpar.twosample_paired.paired_ranks_test(pd.Series(x), pd.Series(y), alternative="two.sided", quantile="normal") == expected

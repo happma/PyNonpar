@@ -9,16 +9,17 @@
 """
 
 import math
-from typing import Any, List, NamedTuple, Optional
+from typing import Any, NamedTuple, Optional
 
 import numpy as np
 import pandas as pd
 import scipy
 import scipy.stats
+from numpy.typing import ArrayLike
 
 import PyNonpar.pseudorank
 import PyNonpar.pseudorank as ps
-from PyNonpar._types import HettmanspergerAlternative
+from PyNonpar._types import HettmanspergerAlternative, as_list
 
 
 class KruskalWallisResult(NamedTuple):
@@ -33,14 +34,14 @@ class HettmanspergerNortonResult(NamedTuple):
     pvalue: float
 
 
-def kruskal_wallis_test(data: List[float], group: List, pseudoranks: bool = True) -> KruskalWallisResult:
+def kruskal_wallis_test(data: ArrayLike, group: ArrayLike, pseudoranks: bool = True) -> KruskalWallisResult:
     """
     Function to calculate the Kruskal-Wallis test. It is recommended to use pseudo-ranks as ranks may lead to paradoxical results.\n
     Null hypothesis H_0: F_1 = ... F_a
 
     Args:
-        data (list(float)): data from all groups \n
-        group (list(int)): group factor \n
+        data (array_like): data from all groups \n
+        group (array_like): group factor \n
         pseudoranks (bool): True if pseudo-ranks instead of ranks are used \n
 
     Returns:
@@ -50,10 +51,8 @@ def kruskal_wallis_test(data: List[float], group: List, pseudoranks: bool = True
     """
 
     # Check inputs
-    if not isinstance(data, list):
-        raise TypeError("data must be a list")
-    if not isinstance(group, list):
-        raise TypeError("group must be a list")
+    data = as_list(data, "data")
+    group = as_list(group, "group")
     if not isinstance(pseudoranks, bool):
         raise TypeError("pseudoranks must be a bool")
 
@@ -85,16 +84,16 @@ def kruskal_wallis_test(data: List[float], group: List, pseudoranks: bool = True
 
 
 def hettmansperger_norton_test(
-    data: List[float], group: List, alternative: HettmanspergerAlternative = "increasing", trend: Optional[List[float]] = None
+    data: ArrayLike, group: ArrayLike, alternative: HettmanspergerAlternative = "increasing", trend: Optional[ArrayLike] = None
 ) -> HettmanspergerNortonResult:
     """
     Function to calculate the Hettmansperger-Norton test.
 
     Args:
-        data (list(float)): data from all groups \n
-        group (list(int)): group factor \n
+        data (array_like): data from all groups \n
+        group (array_like): group factor \n
         alternative (str): either 'increasing', 'decreasing' or 'custom' \n
-        trend (list(float)): a vector specifying the alternative; only used, if alternative = 'custom' \n
+        trend (array_like): a vector specifying the alternative; only used, if alternative = 'custom' \n
 
     Returns:
         namedtuple('HettmanspergerNortonResult', ('alternative', 'weight', 'statistic', 'pvalue')): \n
@@ -109,16 +108,15 @@ def hettmansperger_norton_test(
     """
 
     # Check inputs
-    if not isinstance(data, list):
-        raise TypeError("data must be a list")
-    if not isinstance(group, list):
-        raise TypeError("group must be a list")
+    data = as_list(data, "data")
+    group = as_list(group, "group")
     if (not isinstance(alternative, str)) or (alternative not in ['increasing', 'decreasing', 'custom']):
         raise TypeError("alternative must be either 'increasing', 'decreasing' or 'custom'")
     a_groups = len(np.unique(group))
     if alternative == "custom":
-        if not isinstance(trend, list):
-            raise TypeError("trend must be a list when alternative is 'custom'")
+        if trend is None:
+            raise TypeError("trend must be array-like when alternative is 'custom'")
+        trend = as_list(trend, "trend")
         if len(trend) != a_groups:
             raise ValueError("trend must have one entry per group")
 

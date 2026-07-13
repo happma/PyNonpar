@@ -10,15 +10,16 @@
 
 import functools
 import math
-from typing import List, NamedTuple, Optional, Tuple
+from typing import NamedTuple, Optional
 
 import numpy as np
 import scipy
 import scipy.special
 import scipy.stats
+from numpy.typing import ArrayLike
 
 import PyNonpar.pseudorank
-from PyNonpar._types import Alternative, Method, Quantile
+from PyNonpar._types import Alternative, Method, Quantile, as_list
 
 
 class BrunnerMunzelResult(NamedTuple):
@@ -56,13 +57,13 @@ class WilcoxonMannWhitneySampleSize(NamedTuple):
     n2rouned: int
 
 
-def brunner_munzel_test(x: List[float], y: List[float], alternative: Alternative = "two.sided", quantile: Quantile = "t") -> BrunnerMunzelResult:
+def brunner_munzel_test(x: ArrayLike, y: ArrayLike, alternative: Alternative = "two.sided", quantile: Quantile = "t") -> BrunnerMunzelResult:
     """
     Function to calculate the Brunner-Munzel test. It is recommended to use the t-approximation for small samples.
 
     Args:
-        x (list(float)): data from first group \n
-        y (list(float)): data from second group \n
+        x (array_like): data from first group \n
+        y (array_like): data from second group \n
         alternative (str): either 'two.sided', 'less' or 'greater' \n
         quantile (str): either 't' for the small sample approximation with a t-distribution or 'normal' for the large sample procedure. \n
 
@@ -75,10 +76,8 @@ def brunner_munzel_test(x: List[float], y: List[float], alternative: Alternative
     """
 
     # Check inputs
-    if not isinstance(x, list):
-        raise TypeError("x must be a list")
-    if not isinstance(y, list):
-        raise TypeError("y must be a list")
+    x = as_list(x, "x")
+    y = as_list(y, "y")
     if (not isinstance(alternative, str)) or (alternative not in ['two.sided', 'less', 'greater']):
         raise TypeError('alternative must be either two.sided, less or greater')
     if (not isinstance(quantile, str)) or (quantile not in ['t', 'normal']):
@@ -137,7 +136,7 @@ def brunner_munzel_test(x: List[float], y: List[float], alternative: Alternative
     return output
 
 
-def hodges_lehmann(x: List[float], y: List[float], alpha: float = 0.05) -> HodgesLehmannEstimator:
+def hodges_lehmann(x: ArrayLike, y: ArrayLike, alpha: float = 0.05) -> HodgesLehmannEstimator:
     """
     Function to calculate the Hodges-Lehmann estimator.\n
     Let us assume a location shift effect, i.e., F_1(x) = F(x - mu_1), i = 1,2 and theta = mu_2 - mu_1. \n
@@ -145,8 +144,8 @@ def hodges_lehmann(x: List[float], y: List[float], alpha: float = 0.05) -> Hodge
     Note that the calculated confidence interval is only valid if there are no ties in the data.
 
     Args:
-        x (list(float)): data from first group \n
-        y (list(float)): data from second group \n
+        x (array_like): data from first group \n
+        y (array_like): data from second group \n
 
     Returns:
         namedtuple('HodgesLehmannEstimator', ('estimate', 'lowerCI', 'upperCI')):\n
@@ -154,14 +153,12 @@ def hodges_lehmann(x: List[float], y: List[float], alpha: float = 0.05) -> Hodge
         lower bound for the asymptotic 1-alpha/2 confidence interval for theta (float)\n
         upper bound for the 1-alpha/2 confidence interval for theta (float) \n
     """
-    if not isinstance(x, list):
-        raise TypeError("x must be a list")
-    if not isinstance(y, list):
-        raise TypeError("y must be a list")
+    x = as_list(x, "x")
+    y = as_list(y, "y")
 
     n = len(x)
     m = len(y)
-    diff: List[float] = [0.0 for i in range(n * m)]
+    diff: list[float] = [0.0 for i in range(n * m)]
 
     for i in range(n):
         for j in range(m):
@@ -181,7 +178,7 @@ def hodges_lehmann(x: List[float], y: List[float], alpha: float = 0.05) -> Hodge
 
 
 @functools.lru_cache(maxsize=1000)
-def _h(s: float, m: int, N: int, ranks: Tuple[float, ...]) -> float:
+def _h(s: float, m: int, N: int, ranks: tuple[float, ...]) -> float:
     r = 0.0
     partial_sum_ranks = 0.0
     for i in range(m):
@@ -206,14 +203,14 @@ def _h(s: float, m: int, N: int, ranks: Tuple[float, ...]) -> float:
 
 
 def wilcoxon_mann_whitney_test(
-    x: List[float], y: List[float], alternative: Alternative = "two.sided", alpha: float = 0.05, method: Method = "asymptotic"
+    x: ArrayLike, y: ArrayLike, alternative: Alternative = "two.sided", alpha: float = 0.05, method: Method = "asymptotic"
 ) -> WilcoxonMannWhitneyResult:
     """
     Function to calculate the Wilcoxon-Mann-Whitney test.
 
     Args:
-        x (list(float)): data from first group \n
-        y (list(float)): data from second group \n
+        x (array_like): data from first group \n
+        y (array_like): data from second group \n
         alternative (str): either 'two.sided', 'less' (x less y) or 'greater' (x greater y) \n
         alpha (float): 1-alpha confidence interval (only valid if there are no ties) \n
         method (str): use 'asymptotic' for the asymptotic test (normal distribution) or the exact test with 'exact'.
@@ -228,10 +225,8 @@ def wilcoxon_mann_whitney_test(
         p-value
     """
 
-    if not isinstance(x, list):
-        raise TypeError("x must be a list")
-    if not isinstance(y, list):
-        raise TypeError("y must be a list")
+    x = as_list(x, "x")
+    y = as_list(y, "y")
     if (not isinstance(alternative, str)) or (alternative not in ['two.sided', 'less', 'greater']):
         raise TypeError('alternative must be either two.sided, less or greater')
     if (not isinstance(method, str)) or (method not in ['asymptotic', 'exact']):
@@ -244,7 +239,7 @@ def wilcoxon_mann_whitney_test(
 
     hl = hodges_lehmann(x, y, alpha)
 
-    group_dummy: List[int] = [0 for i in range(N)]
+    group_dummy: list[int] = [0 for i in range(N)]
     ranks = PyNonpar.pseudorank.psrank(data, group_dummy)
 
     x = ranks[:n]
@@ -276,7 +271,7 @@ def wilcoxon_mann_whitney_test(
 
         ranks.sort()
         ranks2_list = [2*ranks[i] for i in range(N)]
-        ranks2: Tuple[float, ...] = tuple(ranks2_list)
+        ranks2: tuple[float, ...] = tuple(ranks2_list)
 
         for i in range(int(2*R_W)):
             combinations += _h(i, m, N, ranks2)
@@ -292,13 +287,13 @@ def wilcoxon_mann_whitney_test(
     return output
 
 
-def wilcoxon_mann_whitney_ssp(x: List[float], y: List[float], power: float = 0.8, alpha: float = 0.05, t: float = 1/2) -> WilcoxonMannWhitneySampleSize:
+def wilcoxon_mann_whitney_ssp(x: ArrayLike, y: ArrayLike, power: float = 0.8, alpha: float = 0.05, t: float = 1/2) -> WilcoxonMannWhitneySampleSize:
     """
     Function to do sample size planning for the WMW test.
 
     Args:
-        x (list(float)): prior information from first group \n
-        y (list(float)): prior information from second group \n
+        x (array_like): prior information from first group \n
+        y (array_like): prior information from second group \n
         power (float): probablity to detect an effect based on prior information \n
         alpha (float): type-I error probability \n
         t (float): ratio of subjects assigned to first group.
@@ -313,10 +308,8 @@ def wilcoxon_mann_whitney_ssp(x: List[float], y: List[float], power: float = 0.8
         n2 (float): sample size for group 2 required; N = (1-t)*n1
     """
 
-    if not isinstance(x, list):
-        raise TypeError("x must be a list")
-    if not isinstance(y, list):
-        raise TypeError("y must be a list")
+    x = as_list(x, "x")
+    y = as_list(y, "y")
 
     m1 = len(x)
     m2 = len(y)
@@ -324,7 +317,7 @@ def wilcoxon_mann_whitney_ssp(x: List[float], y: List[float], power: float = 0.8
     data = x + y
     N = len(data)
 
-    group_dummy: List[int] = [0 for i in range(N)]
+    group_dummy: list[int] = [0 for i in range(N)]
     ranks = PyNonpar.pseudorank.psrank(data, group_dummy)
 
     R1 = ranks[:m1]
@@ -335,8 +328,8 @@ def wilcoxon_mann_whitney_ssp(x: List[float], y: List[float], power: float = 0.8
     R22 = PyNonpar.pseudorank.psrank(y, [0 for i in range(m2)])
 
     # placements
-    P1: List[float] = [0.0 for i in range(m1)]
-    P2: List[float] = [0.0 for i in range(m2)]
+    P1: list[float] = [0.0 for i in range(m1)]
+    P2: list[float] = [0.0 for i in range(m2)]
 
     for i in range(m1):
         P1[i] = R1[i] - R11[i]

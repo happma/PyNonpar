@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 
 import PyNonpar
@@ -48,3 +50,16 @@ def test_psrank_invalid_input():
         PyNonpar.pseudorank.psrank(x, "not a list")
     with pytest.raises(TypeError):
         PyNonpar.pseudorank.psrank(x, grp, ties_method="bogus")
+    with pytest.raises(TypeError):
+        PyNonpar.pseudorank.psrank({"a": 1}, grp)
+    with pytest.raises(TypeError):
+        PyNonpar.pseudorank.psrank(np.array([[1, 2], [3, 4]]), grp)
+    with pytest.raises(TypeError):
+        PyNonpar.pseudorank.psrank([[1, 2], [3, 4, 5]], grp)
+
+
+def test_psrank_array_like():
+    expected = PyNonpar.pseudorank.psrank(x, grp, ties_method="average")
+    assert PyNonpar.pseudorank.psrank(np.array(x), np.array(grp), ties_method="average") == expected
+    assert PyNonpar.pseudorank.psrank(tuple(x), tuple(grp), ties_method="average") == expected
+    assert PyNonpar.pseudorank.psrank(pd.Series(x), pd.Series(grp), ties_method="average") == expected

@@ -10,16 +10,17 @@
 
 """
 
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple, Optional
 
 import numpy as np
 import pandas as pd
 import scipy
 import scipy.special
 import scipy.stats
+from numpy.typing import ArrayLike
 
 import PyNonpar.pseudorank
-from PyNonpar._types import Distribution
+from PyNonpar._types import Distribution, as_list
 
 
 class KepnerRobinsonResult(NamedTuple):
@@ -27,18 +28,18 @@ class KepnerRobinsonResult(NamedTuple):
     distribution: str
     df1: Optional[float]
     df2: Optional[float]
-    relativeEffects: List[float]
+    relativeEffects: list[float]
     pvalue: float
 
 
-def kepner_robinson_test(data: List[float], time: List, subject: List, distribution: Distribution = "F") -> KepnerRobinsonResult:
+def kepner_robinson_test(data: ArrayLike, time: ArrayLike, subject: ArrayLike, distribution: Distribution = "F") -> KepnerRobinsonResult:
     """
     Function to calculate the Kepner-Robinson test.
 
     Args:
-        data (list(float)): data vector \n
-        time (list(float)): subplot-factor variable \n
-        subject (list(float)): factor variable specifying subjects \n
+        data (array_like): data vector \n
+        time (array_like): subplot-factor variable \n
+        subject (array_like): factor variable specifying subjects \n
         distribution (str): either 'F' or 'Chisq'. \n
 
     Returns:
@@ -51,12 +52,9 @@ def kepner_robinson_test(data: List[float], time: List, subject: List, distribut
     """
 
     # Check inputs
-    if not isinstance(data, list):
-        raise TypeError("data must be a list")
-    if not isinstance(time, list):
-        raise TypeError("time must be a list")
-    if not isinstance(subject, list):
-        raise TypeError("subject must be a list")
+    data = as_list(data, "data")
+    time = as_list(time, "time")
+    subject = as_list(subject, "subject")
     if (not isinstance(distribution, str)) or (distribution not in ['F', 'Chisq']):
         raise TypeError('distribution must be either F or Chisq')
 
@@ -75,8 +73,8 @@ def kepner_robinson_test(data: List[float], time: List, subject: List, distribut
     df['subject'] = df['subject'].cat.codes
 
     # relative effects
-    p_hat: List[float] = [0.0 for x in range(a)]
-    R_dot_ind: List[float] = [0.0 for x in range(N)]
+    p_hat: list[float] = [0.0 for x in range(a)]
+    R_dot_ind: list[float] = [0.0 for x in range(N)]
 
     for i in range(0, a):
         tmp = df[df['time'] == i]

@@ -10,13 +10,13 @@
 
 """
 
-from typing import List
 
 import numba as nu
 import numpy as np
 import pandas as pd
+from numpy.typing import ArrayLike
 
-from PyNonpar._types import TiesMethod
+from PyNonpar._types import TiesMethod, as_list
 
 
 @nu.jit(nopython=True)
@@ -132,13 +132,13 @@ def _psrank_min(data: list, group: list, N: int, n: list, a: int) -> list:
     return lpsrank
 
 
-def psrank(data: List[float], group: List, ties_method: TiesMethod = "average") -> List[float]:
+def psrank(data: ArrayLike, group: ArrayLike, ties_method: TiesMethod = "average") -> list[float]:
     """
     Function to calculate pseudo-ranks.
 
     Args:
-        data (list(float)): values to be ranked \n
-        group (list(int)): group factor \n
+        data (array_like): values to be ranked \n
+        group (array_like): group factor \n
         ties_method (str): either 'average', 'max' or 'min' for mid, max or min pseudo-ranks \n
 
     Returns:
@@ -146,10 +146,8 @@ def psrank(data: List[float], group: List, ties_method: TiesMethod = "average") 
     """
 
     # Check inputs
-    if not isinstance(data, list):
-        raise TypeError("data must be a list")
-    if not isinstance(group, list):
-        raise TypeError("group must be a list")
+    data = as_list(data, "data")
+    group = as_list(group, "group")
     if (not isinstance(ties_method, str)) or (ties_method not in ['average', 'min', 'max']):
         raise TypeError("ties_method must be either 'average', 'min' or 'max'")
 
