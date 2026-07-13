@@ -24,8 +24,8 @@ pip install PyNonpar
 
 ## What's new in 0.3.0
 
-- All functions now accept **array-like input** — Python lists, tuples, `numpy.ndarray`, and
-  `pandas.Series` — matching the calling convention of `scipy.stats`. Existing code that passes
+- All functions now accept **array-like input** Python lists, tuples, `numpy.ndarray`, and
+  `pandas.Series` to match the calling convention of `scipy.stats`. Existing code that passes
   plain lists keeps working exactly as before.
 - Stricter, more consistent input validation across all functions: invalid options now raise a
   clear `TypeError`/`ValueError` instead of silently producing an incorrect result.
