@@ -22,6 +22,28 @@ To install the package from PyPI, simply type
 pip install PyNonpar
 ```
 
+## What's new in 0.3.0
+
+- All functions now accept **array-like input** — Python lists, tuples, `numpy.ndarray`, and
+  `pandas.Series` — matching the calling convention of `scipy.stats`. Existing code that passes
+  plain lists keeps working exactly as before.
+- Stricter, more consistent input validation across all functions: invalid options now raise a
+  clear `TypeError`/`ValueError` instead of silently producing an incorrect result.
+- Type hints and updated docstrings throughout.
+
+```Python
+import numpy as np
+import pandas as pd
+import PyNonpar
+from PyNonpar import*
+
+# array-like input is now accepted everywhere - not just plain lists
+x = np.array([8, 4, 10, 4, 9, 1, 3, 3, 4, 8])
+y = pd.Series([10, 5, 11, 6, 11, 2, 4, 5, 5, 10])
+
+PyNonpar.twosample.brunner_munzel_test(x, y, alternative="less", quantile="t")
+```
+
 ## Table of Contents
 **[Two-Sample Tests](#two-sample-tests)**<br>
 **[Paired Two-Sample Tests](#paired-two-sample-tests)**<br>
